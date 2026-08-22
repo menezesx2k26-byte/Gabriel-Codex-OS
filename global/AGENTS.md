@@ -29,6 +29,14 @@ These are persistent cross-project operating rules for Codex.
 - Keep handoff notes concise and operational.
 - Distinguish clearly between current state, completed work, and next steps.
 
+## Mandatory visual routing
+- For every task that generates, edits, transforms, reviews, or approves a visual asset, invoke `$visual-quality-director` before final approval.
+- If the repository provides a more specific visual or image-director skill, use it in addition to `$visual-quality-director`; repo-specific direction refines the global workflow rather than replacing quality review.
+- For raster image generation or image editing, prepare the visual brief through the applicable director skill before invoking `$imagegen` when that skill/tool is available.
+- After generation or editing, inspect the actual result through the director workflow. Tool success alone is never sufficient for approval.
+- When most of a visual already passes review, prefer a targeted edit that preserves approved regions over regenerating the whole asset.
+- Do not mark a visual asset `approved` until it passes the relevant composition, realism, anatomy/object-interaction, crop-safety, brand-consistency, and layout-use checks.
+
 ## Visual and asset work
 - The function of the asset inside the layout comes before aesthetics.
 - Do not invent UI text, logos, or business claims inside raster images unless explicitly requested.
