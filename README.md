@@ -27,6 +27,13 @@ A arquitetura tem 3 camadas:
    `<repo>/AGENTS.md` + `docs/context/*`  
    Regras, decisões, estado e handoff específicos de cada repo.
 
+A continuidade segue o princípio de que **contexto do modelo não é histórico autoritativo**: fatos de execução importantes devem sobreviver em Git e em `docs/context/*`, permitindo retomada segura mesmo após compactação, troca de sessão ou interrupção.
+
+## Skills centrais
+
+- `visual-quality-director`: direção, revisão e aprovação de assets visuais.
+- `durable-execution-memory`: continuidade entre sessões, recuperação após interrupções e persistência de fatos operacionais sem depender do histórico do chat.
+
 ## Instalação
 
 No PowerShell, na raiz deste repositório:
@@ -73,11 +80,13 @@ NovoProjeto/
 - mantenha o `global/AGENTS.md` curto
 - coloque detalhes processuais nas skills
 - use `docs/context/` para estado persistente
+- trate Git/repositório como evidência autoritativa de execução
 - quando mudar instruções globais ou skills, inicie nova sessão do Codex
 
 ## Referências externas úteis
 
 - **awesome-gpt-image-2** — coleção de prompts, exemplos, workflows e técnicas para GPT Image 2: https://github.com/freestylefly/awesome-gpt-image-2
+- **Apache Maka** — referência arquitetural para registro durável de execução, recuperação e separação entre histórico persistido e contexto reduzido enviado ao modelo: https://github.com/apache/maka
 
 ## Próximas skills sugeridas
 
