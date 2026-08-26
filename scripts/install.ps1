@@ -20,7 +20,8 @@ $VendorRepos = @(
     @{ Name = "claude-skills"; Url = "https://github.com/alirezarezvani/claude-skills.git" },
     @{ Name = "agentmemory"; Url = "https://github.com/rohitg00/agentmemory.git" },
     @{ Name = "andrej-karpathy-skills"; Url = "https://github.com/multica-ai/andrej-karpathy-skills.git" },
-    @{ Name = "ponytail"; Url = "https://github.com/DietrichGebert/ponytail.git" }
+    @{ Name = "ponytail"; Url = "https://github.com/DietrichGebert/ponytail.git" },
+    @{ Name = "tencentdb-agent-memory"; Url = "https://github.com/TencentCloud/TencentDB-Agent-Memory.git" }
 )
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
