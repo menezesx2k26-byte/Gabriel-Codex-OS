@@ -23,6 +23,13 @@ These are persistent cross-project operating rules for Codex.
 - When choosing custom implementation despite a plausible existing solution, record the concrete reason rather than silently reinventing it.
 - Reuse concepts and patterns even when the dependency itself is unsuitable.
 
+## Browser automation efficiency
+- For browser automation, prefer tools and patterns that reduce repeated observe/act round-trips by composing deterministic multi-step actions when safe.
+- Prefer semantic snapshots, scoped page state, and targeted extraction over repeatedly loading full-page representations.
+- When a browser task can be expressed as one bounded script or batch of actions, prefer that over many small tool calls, provided intermediate inspection is not required for safety or correctness.
+- Use `ego-lite` (`https://github.com/citrolabs/ego-lite`) as a reference/candidate for low-round-trip browser automation and isolated agent browser spaces when relevant; do not assume runtime compatibility or install it automatically.
+- Do not sacrifice observability, confirmation boundaries, or safety merely to reduce tool calls.
+
 ## Execution discipline
 - Before editing, identify the relevant files, constraints, and likely side effects.
 - Prefer minimal, precise edits over broad rewrites.
