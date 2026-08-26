@@ -1,6 +1,6 @@
 ---
 name: context-budget-manager
-description: Use when a task is large, long-running, repository-heavy, multi-agent, reference-heavy, or likely to waste tokens by loading, rereading, or rediscovering unnecessary context.
+description: Use when a task is large, long-running, repository-heavy, multi-agent, reference-heavy, or likely to waste tokens by loading, rereading, rediscovering, or revalidating unnecessary context.
 ---
 
 # Context Budget Manager
@@ -17,12 +17,12 @@ Prefer information in this order when it can answer the current question:
 1. Current task and explicit user requirements.
 2. Repo-local `AGENTS.md` and directly applicable instructions.
 3. Current Git status/diff and the exact files being changed.
-4. Relevant durable state from `docs/context/*`.
+4. Relevant durable state from `docs/context/*` or a verification ledger.
 5. A task-specific skill.
 6. Targeted external reference material.
 7. Broader repository or web exploration only when the narrower sources are insufficient.
 
-Do not preload every available skill, document, reference repository, log, or source.
+Do not preload every available skill, document, reference repository, log, source, or validation transcript.
 
 ## Tiered context loading
 Use a three-level loading model inspired by OpenViking context engineering:
@@ -68,7 +68,20 @@ If a result appears wrong or contradictory, inspect the retrieval path before br
 6. Inspect additional context only to resolve a named uncertainty or validate the hypothesis.
 7. Execute the smallest coherent change.
 8. Run proportionate validation.
-9. Persist durable facts needed by future sessions, then allow transient exploration details to fall out of context.
+9. Persist durable facts needed by future sessions, including reusable green verification evidence, then allow transient exploration details to fall out of context.
+
+## Verification budget
+Verification also consumes the execution window. Budget it deliberately.
+
+- Never start a large session by running every test, lint, typecheck, and build command merely to establish a baseline when recent green evidence exists for unchanged relevant code.
+- Prefer a repository-provided changed-file verifier, focused test selector, verification ledger, or cached green evidence when available.
+- After a focused code change, run the narrowest check that directly exercises the changed behavior.
+- Documentation-only and handoff-only changes should normally reuse prior code verification.
+- Unknown or cross-cutting changes must escalate rather than be guessed safe, but full verification should normally be reserved for the end-of-window/integration gate.
+- Default to at most one full verification pass per execution window. A second pass is justified after a concrete failure plus corrective change, or when an explicit release gate requires it.
+- CI full-suite evidence is valid durable evidence when it covers the relevant commit/tree; do not duplicate it locally without a named reason.
+- Persist the verified commit/tree, command, result, timestamp, and evidence locator when the project supports durable execution state. Never store secrets or sensitive payloads in that record.
+- Do not optimize away safety-critical or irreversible-action validation.
 
 ## Token-waste anti-patterns
 Avoid:
@@ -80,6 +93,8 @@ Avoid:
 - exploring many frameworks after an adequate project-compatible solution is known
 - regenerating approved work instead of targeted correction
 - repeating completed operations after context loss
+- rerunning a full verification suite at session start when unchanged code already has fresh green evidence
+- running the same full gate locally after CI has already proved the same tree green without a concrete reason
 - dumping verbose command output into durable documentation
 - maintaining long narrative handoffs instead of operational checkpoints
 - using multiple agents for work that is simpler and cheaper sequentially
@@ -113,6 +128,7 @@ Before finishing, ask operationally:
 - Did I load anything irrelevant to the task?
 - Did I escalate to L2 before establishing relevance?
 - Did I repeatedly fetch or summarize information I already had?
+- Did I rerun a full verification gate that fresh durable evidence already covered?
 - Could a future session resume from durable state without replaying this exploration?
 - Did token optimization weaken validation or correctness?
 
