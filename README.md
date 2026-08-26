@@ -4,7 +4,7 @@ Base reutilizável para deixar o Codex mais consistente em qualquer projeto.
 
 ## O que vem aqui
 
-- `global/AGENTS.md`: regras globais de comportamento para o Codex
+- `global/AGENTS.md`: regras globais de comportamento para Codex
 - `skills/`: skills reutilizáveis em escopo de usuário
 - `templates/`: arquivos-base para novos repositórios
 - `scripts/install.ps1`: instala AGENTS global + skills no seu usuário e sincroniza o vendor toolkit
@@ -63,6 +63,7 @@ O instalador mantém estes repositórios em `~/.agents/vendor/`:
 - `andrej-karpathy-skills` — regras compactas derivadas de falhas comuns observadas em coding agents: https://github.com/multica-ai/andrej-karpathy-skills
 - `ponytail` — padrões YAGNI/reuse/minimal-code para evitar implementação desnecessária: https://github.com/DietrichGebert/ponytail
 - `tencentdb-agent-memory` — memória em camadas, extração de skills, Wiki, CodeGraph e loadouts de memória por agente; usar como referência/candidato, não ativar runtime automaticamente: https://github.com/TencentCloud/TencentDB-Agent-Memory
+- `ego-lite` — automação de navegador orientada a agentes, com composição de ações para reduzir observe/act loops e tool calls; usar como referência/candidato e respeitar compatibilidade de plataforma: https://github.com/citrolabs/ego-lite
 
 Esses vendors são fontes de consulta/candidatos de reutilização. Código ou runtime de terceiros não é ativado automaticamente; adoção real continua sujeita a licença, segurança, privacidade e compatibilidade com o projeto.
 
@@ -103,6 +104,7 @@ NovoProjeto/
 - trate Git/repositório como evidência autoritativa de execução
 - use carregamento progressivo de contexto: resumo curto -> visão geral -> detalhe apenas quando necessário
 - procure primeiro no vendor toolkit antes de pesquisa ampla ou implementação customizada
+- para automação web, prefira composição de ações e snapshots semânticos quando isso reduzir loops sem perder segurança/observabilidade
 - quando mudar instruções globais ou skills, inicie nova sessão do Codex
 
 ## Referências externas úteis
@@ -112,6 +114,7 @@ NovoProjeto/
 - **awesome-llm-apps** — 100+ exemplos open-source de agentes, agent skills, RAG, multimodal, voice, always-on, generative UI e equipes multiagente; usar como biblioteca de padrões, nunca como justificativa automática para frameworks ou arquitetura mais complexa: https://github.com/Shubhamsaboo/awesome-llm-apps
 - **OpenViking** — referência de context engineering para filesystem de contexto, carregamento L0/L1/L2, recuperação hierárquica e rastreabilidade da recuperação; usar como inspiração arquitetural e avaliar AGPLv3, privacidade e custo operacional antes de qualquer adoção como dependência: https://github.com/volcengine/OpenViking
 - **TencentDB Agent Memory** — referência para memória em camadas, assets de memória, extração de skills, Wiki/CodeGraph e loadout seletivo por agente: https://github.com/TencentCloud/TencentDB-Agent-Memory
+- **ego-lite** — referência/candidato para browser automation com menos round-trips, composição de ações e espaços isolados por agente: https://github.com/citrolabs/ego-lite
 
 ## Próximas skills sugeridas
 
