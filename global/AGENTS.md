@@ -18,6 +18,14 @@ These are persistent cross-project operating rules for Codex.
 - Prefer targeted correction over full regeneration when most of the work is already good.
 - Preserve the repo's existing conventions unless there is a clear reason to change them.
 
+## Context and token budget
+- Treat model context as a scarce working set: load the smallest sufficient context for the next correct decision.
+- For large, long-running, repository-heavy, multi-agent, or reference-heavy tasks, invoke `$context-budget-manager` when available.
+- Prefer targeted files, sections, diffs, searches, and task-specific skills over full-repository or full-reference loading.
+- Route to the smallest applicable skill set instead of accumulating every available instruction or reference in the prompt.
+- Stop exploration when sufficient evidence exists to implement and validate a project-compatible solution.
+- Do not save tokens by guessing, skipping required validation, or ignoring material uncertainty.
+
 ## Durable execution continuity
 - Treat model context as a working view, not as the authoritative history of execution.
 - For multi-step, interruptible, long-running, multi-agent, or cross-session work, invoke `$durable-execution-memory` when available.
