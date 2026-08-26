@@ -11,11 +11,14 @@ These are persistent cross-project operating rules for Codex.
 - Avoid architecture churn. Do not rework foundations unless the task truly requires it.
 
 ## Reuse-first strategy
-- Before designing or implementing a non-trivial solution from scratch, check whether the problem is already solved well enough by an existing library, framework, CLI, service, template, skill, protocol, integration, open-source project, or repository-local utility.
+- Before designing or implementing a non-trivial solution from scratch, invoke `$reuse-first-router` when available.
+- Check whether the problem is already solved well enough by an existing library, framework, CLI, service, template, skill, protocol, integration, open-source project, or repository-local utility.
 - Prefer adopting or adapting a mature "Swiss-army knife" that solves most of the requirement over rebuilding the same capabilities piecemeal.
-- Search in this order when relevant: existing project code/utilities -> installed/user skills -> known reference libraries -> mature ecosystem packages/tools -> custom implementation.
+- Search progressively and cheaply: existing project code/utilities -> installed/user skills -> known curated references -> mature ecosystem packages/tools -> broad discovery -> custom implementation.
+- Stop discovery as soon as a clearly adequate candidate satisfies the material constraints; do not exhaustively compare tools without a high-impact reason.
 - Evaluate reuse candidates for project fit, maintenance activity, license, security, privacy, operational cost, lock-in, performance, integration complexity, and how much of the requirement they actually cover.
 - Do not reject an existing solution merely because it is not architecturally perfect. Prefer the smallest safe adaptation when it substantially reduces code, tokens, maintenance, or failure surface.
+- Prefer reuse in this order when practical: use as-is -> configuration -> adapter/wrapper -> selective module/pattern -> fork -> custom build.
 - Do not adopt a dependency merely because it exists. Build custom only when existing options fail material constraints, create unacceptable risk/complexity, or the custom solution is genuinely simpler.
 - When choosing custom implementation despite a plausible existing solution, record the concrete reason rather than silently reinventing it.
 - Reuse concepts and patterns even when the dependency itself is unsuitable.
