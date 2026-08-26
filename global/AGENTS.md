@@ -18,6 +18,17 @@ These are persistent cross-project operating rules for Codex.
 - Prefer targeted correction over full regeneration when most of the work is already good.
 - Preserve the repo's existing conventions unless there is a clear reason to change them.
 
+## Durable execution continuity
+- Treat model context as a working view, not as the authoritative history of execution.
+- For multi-step, interruptible, long-running, multi-agent, or cross-session work, invoke `$durable-execution-memory` when available.
+- Persist meaningful execution facts in repo-local durable context rather than relying on chat history alone.
+- On resume, inspect repository state, durable context, current branch, and recent changes before repeating work.
+- Observable repository state and validated evidence outrank conversational recollection when they disagree.
+- Do not redo completed work merely because it is absent from the current context.
+- Before retrying destructive, costly, deployment, or externally mutating operations after an interruption, verify whether they already succeeded or partially completed.
+- Never store secrets or credentials in durable context.
+- Use Apache Maka (`https://github.com/apache/maka`) as an architectural reference for durable execution records, recovery, and separation of saved history from model context when relevant; do not make it a dependency unless a project explicitly requires it.
+
 ## Validation
 - Run relevant checks after meaningful changes.
 - For code: lint, tests, typecheck, build, or focused validation as appropriate.
