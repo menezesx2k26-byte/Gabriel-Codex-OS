@@ -21,6 +21,8 @@ Current vendor references:
 - `agentmemory` — persistent-memory implementation/reference for coding agents.
 - `andrej-karpathy-skills` — concise coding-agent behavior rules and failure-avoidance guidance.
 - `ponytail` — YAGNI/reuse/minimal-code patterns for coding agents.
+- `tencentdb-agent-memory` — layered memory assets, skills, wiki/code graph, and per-agent context loadouts.
+- `ego-lite` — token-efficient browser automation patterns and an optional agent browser integration.
 
 These repositories are reference/candidate sources. Do not load them wholesale into context and do not activate third-party runtime code automatically.
 
@@ -46,8 +48,10 @@ Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, 
 - harness / orchestration / agent runtime -> `awesome-harness-engineering`
 - reusable agent skills -> `claude-skills`
 - coding-agent memory -> `agentmemory`
+- team memory assets / code knowledge / per-agent loadouts -> `tencentdb-agent-memory`
 - coding-behavior pitfalls -> `andrej-karpathy-skills`
 - YAGNI / smallest-code solution -> `ponytail`
+- browser automation / web workflows -> `ego-lite` when the environment and constraints fit
 
 Inspect indexes, README sections, names, or targeted search results first. Do not ingest the whole repository.
 
@@ -76,6 +80,21 @@ Build custom only when:
 - or the custom solution is materially smaller and easier to maintain.
 
 When custom-building despite a plausible reusable candidate, record the concrete reason.
+
+## Browser automation discipline
+For non-trivial browser workflows, prefer a solution that reduces observation/action round-trips. If a browser tool supports composing several deterministic page actions into one script or bounded execution unit, prefer that over a long sequence of tiny tool calls when it remains observable and safe.
+
+Evaluate browser reuse candidates for:
+- platform support
+- authentication/session handling
+- isolation between user and agent browsing
+- snapshot/DOM quality
+- token/tool-call overhead
+- ability to compose multi-step actions
+- privacy and local-data handling
+- recoverability when a step fails
+
+`ego-lite` is a useful reference/candidate for this pattern, but its browser runtime is currently macOS-focused. Do not assume it can be activated on unsupported platforms; reuse the execution pattern or select another browser tool when necessary.
 
 ## Candidate triage
 For each serious reuse candidate, answer only what matters:
