@@ -34,6 +34,7 @@ A continuidade segue o princípio de que **contexto do modelo não é histórico
 - `visual-quality-director`: direção, revisão e aprovação de assets visuais.
 - `durable-execution-memory`: continuidade entre sessões, recuperação após interrupções e persistência de fatos operacionais sem depender do histórico do chat.
 - `llm-app-pattern-library`: consulta seletiva a padrões e exemplos de agentes, RAG, multimodal, voice, generative UI, always-on e multi-agent antes de introduzir arquitetura ou dependências novas.
+- `context-budget-manager`: controla o working set de contexto, usa carregamento progressivo e evita leituras, referências e reexploração desnecessárias sem sacrificar validação.
 
 ## Instalação
 
@@ -82,6 +83,7 @@ NovoProjeto/
 - coloque detalhes processuais nas skills
 - use `docs/context/` para estado persistente
 - trate Git/repositório como evidência autoritativa de execução
+- use carregamento progressivo de contexto: resumo curto -> visão geral -> detalhe apenas quando necessário
 - quando mudar instruções globais ou skills, inicie nova sessão do Codex
 
 ## Referências externas úteis
@@ -89,6 +91,7 @@ NovoProjeto/
 - **awesome-gpt-image-2** — coleção de prompts, exemplos, workflows e técnicas para GPT Image 2: https://github.com/freestylefly/awesome-gpt-image-2
 - **Apache Maka** — referência arquitetural para registro durável de execução, recuperação e separação entre histórico persistido e contexto reduzido enviado ao modelo: https://github.com/apache/maka
 - **awesome-llm-apps** — 100+ exemplos open-source de agentes, agent skills, RAG, multimodal, voice, always-on, generative UI e equipes multiagente; usar como biblioteca de padrões, nunca como justificativa automática para frameworks ou arquitetura mais complexa: https://github.com/Shubhamsaboo/awesome-llm-apps
+- **OpenViking** — referência de context engineering para filesystem de contexto, carregamento L0/L1/L2, recuperação hierárquica e rastreabilidade da recuperação; usar como inspiração arquitetural e avaliar AGPLv3, privacidade e custo operacional antes de qualquer adoção como dependência: https://github.com/volcengine/OpenViking
 
 ## Próximas skills sugeridas
 
