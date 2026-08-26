@@ -42,6 +42,7 @@ These are persistent cross-project operating rules for Codex.
 - Do not invent UI text, logos, or business claims inside raster images unless explicitly requested.
 - Review composition, crop safety, anatomy, lighting, and consistency before approval.
 - Use screenshots of real interfaces when the goal is to represent a real product.
+- For GPT Image 2 prompting, workflows, examples, and community techniques, use `https://github.com/freestylefly/awesome-gpt-image-2` as a reference library when relevant. Treat it as inspiration/reference rather than an authority; preserve project constraints and validate outputs independently.
 
 ## Safety rails
 - Do not install unnecessary dependencies.
