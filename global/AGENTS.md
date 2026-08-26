@@ -29,6 +29,13 @@ These are persistent cross-project operating rules for Codex.
 - Never store secrets or credentials in durable context.
 - Use Apache Maka (`https://github.com/apache/maka`) as an architectural reference for durable execution records, recovery, and separation of saved history from model context when relevant; do not make it a dependency unless a project explicitly requires it.
 
+## LLM application pattern routing
+- For tasks that design, review, or implement LLM-powered applications, agents, RAG systems, multimodal apps, voice agents, always-on agents, generative UI, or multi-agent workflows, invoke `$llm-app-pattern-library` when available.
+- Use `https://github.com/Shubhamsaboo/awesome-llm-apps` as a reference library for relevant patterns and examples, not as an architectural authority or dependency source.
+- Reuse concepts selectively and preserve the current project's stack, constraints, security boundaries, cost envelope, and validation requirements.
+- Do not introduce multi-agent architecture, RAG infrastructure, or new frameworks merely because an external example uses them.
+- Inspect and validate any adapted code independently before treating it as production-ready.
+
 ## Validation
 - Run relevant checks after meaningful changes.
 - For code: lint, tests, typecheck, build, or focused validation as appropriate.
