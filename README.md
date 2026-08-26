@@ -62,6 +62,7 @@ O instalador mantém estes repositórios em `~/.agents/vendor/`:
 - `agentmemory` — implementação/referência de memória persistente para coding agents: https://github.com/rohitg00/agentmemory
 - `andrej-karpathy-skills` — regras compactas derivadas de falhas comuns observadas em coding agents: https://github.com/multica-ai/andrej-karpathy-skills
 - `ponytail` — padrões YAGNI/reuse/minimal-code para evitar implementação desnecessária: https://github.com/DietrichGebert/ponytail
+- `tencentdb-agent-memory` — memória em camadas, extração de skills, Wiki, CodeGraph e loadouts de memória por agente; usar como referência/candidato, não ativar runtime automaticamente: https://github.com/TencentCloud/TencentDB-Agent-Memory
 
 Esses vendors são fontes de consulta/candidatos de reutilização. Código ou runtime de terceiros não é ativado automaticamente; adoção real continua sujeita a licença, segurança, privacidade e compatibilidade com o projeto.
 
@@ -110,6 +111,7 @@ NovoProjeto/
 - **Apache Maka** — referência arquitetural para registro durável de execução, recuperação e separação entre histórico persistido e contexto reduzido enviado ao modelo: https://github.com/apache/maka
 - **awesome-llm-apps** — 100+ exemplos open-source de agentes, agent skills, RAG, multimodal, voice, always-on, generative UI e equipes multiagente; usar como biblioteca de padrões, nunca como justificativa automática para frameworks ou arquitetura mais complexa: https://github.com/Shubhamsaboo/awesome-llm-apps
 - **OpenViking** — referência de context engineering para filesystem de contexto, carregamento L0/L1/L2, recuperação hierárquica e rastreabilidade da recuperação; usar como inspiração arquitetural e avaliar AGPLv3, privacidade e custo operacional antes de qualquer adoção como dependência: https://github.com/volcengine/OpenViking
+- **TencentDB Agent Memory** — referência para memória em camadas, assets de memória, extração de skills, Wiki/CodeGraph e loadout seletivo por agente: https://github.com/TencentCloud/TencentDB-Agent-Memory
 
 ## Próximas skills sugeridas
 
