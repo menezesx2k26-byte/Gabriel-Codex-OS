@@ -7,7 +7,7 @@ Base reutilizável para deixar o Codex mais consistente em qualquer projeto.
 - `global/AGENTS.md`: regras globais de comportamento para o Codex
 - `skills/`: skills reutilizáveis em escopo de usuário
 - `templates/`: arquivos-base para novos repositórios
-- `scripts/install.ps1`: instala AGENTS global + skills no seu usuário
+- `scripts/install.ps1`: instala AGENTS global + skills no seu usuário e sincroniza o vendor toolkit
 - `scripts/update.ps1`: atualiza a instalação local a partir deste repositório
 - `scripts/bootstrap-project.ps1`: cria a estrutura inicial de um novo projeto
 
@@ -35,6 +35,7 @@ A continuidade segue o princípio de que **contexto do modelo não é histórico
 - `durable-execution-memory`: continuidade entre sessões, recuperação após interrupções e persistência de fatos operacionais sem depender do histórico do chat.
 - `llm-app-pattern-library`: consulta seletiva a padrões e exemplos de agentes, RAG, multimodal, voice, generative UI, always-on e multi-agent antes de introduzir arquitetura ou dependências novas.
 - `context-budget-manager`: controla o working set de contexto, usa carregamento progressivo e evita leituras, referências e reexploração desnecessárias sem sacrificar validação.
+- `reuse-first-router`: procura primeiro por soluções existentes e canivetes suíços antes de autorizar implementação customizada.
 
 ## Instalação
 
@@ -48,7 +49,21 @@ Set-ExecutionPolicy -Scope Process Bypass
 Isso vai:
 - copiar `global/AGENTS.md` para `~/.codex/AGENTS.md`
 - copiar as skills para `~/.agents/skills`
-- sem sobrescrever arquivos fora desse escopo
+- criar `~/.agents/vendor/`
+- clonar ou atualizar, de forma rasa, os repositórios do reuse toolkit
+- manter os vendors fora do working set padrão: ficam disponíveis para busca seletiva, não carregados em todo prompt
+
+### Reuse vendor toolkit
+
+O instalador mantém estes repositórios em `~/.agents/vendor/`:
+
+- `awesome-harness-engineering` — harness engineering, memória, MCP, permissions, evals, observabilidade e orquestração: https://github.com/ai-boost/awesome-harness-engineering
+- `claude-skills` — grande catálogo de skills compatíveis com múltiplos coding agents, incluindo Codex: https://github.com/alirezarezvani/claude-skills
+- `agentmemory` — implementação/referência de memória persistente para coding agents: https://github.com/rohitg00/agentmemory
+- `andrej-karpathy-skills` — regras compactas derivadas de falhas comuns observadas em coding agents: https://github.com/multica-ai/andrej-karpathy-skills
+- `ponytail` — padrões YAGNI/reuse/minimal-code para evitar implementação desnecessária: https://github.com/DietrichGebert/ponytail
+
+Esses vendors são fontes de consulta/candidatos de reutilização. Código ou runtime de terceiros não é ativado automaticamente; adoção real continua sujeita a licença, segurança, privacidade e compatibilidade com o projeto.
 
 ## Atualização
 
@@ -57,6 +72,8 @@ Depois de alterar este repositório:
 ```powershell
 .\scripts\update.ps1
 ```
+
+O update chama o instalador e também sincroniza o vendor toolkit.
 
 ## Criando um projeto novo
 
@@ -84,6 +101,7 @@ NovoProjeto/
 - use `docs/context/` para estado persistente
 - trate Git/repositório como evidência autoritativa de execução
 - use carregamento progressivo de contexto: resumo curto -> visão geral -> detalhe apenas quando necessário
+- procure primeiro no vendor toolkit antes de pesquisa ampla ou implementação customizada
 - quando mudar instruções globais ou skills, inicie nova sessão do Codex
 
 ## Referências externas úteis
