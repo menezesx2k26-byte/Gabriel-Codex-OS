@@ -75,6 +75,10 @@ NovoProjeto/
 - use `docs/context/` para estado persistente
 - quando mudar instruções globais ou skills, inicie nova sessão do Codex
 
+## Referências externas úteis
+
+- **awesome-gpt-image-2** — coleção de prompts, exemplos, workflows e técnicas para GPT Image 2: https://github.com/freestylefly/awesome-gpt-image-2
+
 ## Próximas skills sugeridas
 
 - `design-system-director`
