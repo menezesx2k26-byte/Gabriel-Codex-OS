@@ -12,6 +12,18 @@ Before custom implementation, perform the cheapest useful search for an existing
 
 Do not browse broadly by default. Search progressively and stop as soon as a clearly adequate candidate is found.
 
+## Local vendor cache
+The Gabriel Codex OS installer maintains a shallow local cache under `~/.agents/vendor/` for high-value reuse references. Prefer targeted search there before remote discovery when relevant.
+
+Current vendor references:
+- `awesome-harness-engineering` — harness architecture, memory, MCP, permissions, observability, evals, orchestration.
+- `claude-skills` — large cross-agent skill catalog with Codex-compatible material.
+- `agentmemory` — persistent-memory implementation/reference for coding agents.
+- `andrej-karpathy-skills` — concise coding-agent behavior rules and failure-avoidance guidance.
+- `ponytail` — YAGNI/reuse/minimal-code patterns for coding agents.
+
+These repositories are reference/candidate sources. Do not load them wholesale into context and do not activate third-party runtime code automatically.
+
 ## Search ladder
 Use this order unless the task gives a stronger source of truth:
 
@@ -26,12 +38,16 @@ Check only what is cheap and local:
 If an adequate solution exists here, use it and stop.
 
 ### Tier 1 — Known toolbox
-Check the smallest relevant known reference, not all of them:
+Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, not all of them:
 - LLM apps / agents / RAG / multi-agent -> `awesome-llm-apps`
 - GPT Image 2 / image generation -> `awesome-gpt-image-2`
 - context engineering / hierarchical loading -> OpenViking patterns
 - durable execution / recovery -> Apache Maka patterns
-- coding-agent skills / harness patterns -> curated skill and harness repositories registered in this Codex OS
+- harness / orchestration / agent runtime -> `awesome-harness-engineering`
+- reusable agent skills -> `claude-skills`
+- coding-agent memory -> `agentmemory`
+- coding-behavior pitfalls -> `andrej-karpathy-skills`
+- YAGNI / smallest-code solution -> `ponytail`
 
 Inspect indexes, README sections, names, or targeted search results first. Do not ingest the whole repository.
 
@@ -78,7 +94,8 @@ Reject quickly when a hard constraint fails. Do not perform deep analysis of obv
 - Search indexes before full docs.
 - Read README/overview before source.
 - Read source only for the integration path or uncertainty that affects adoption.
-- Do not clone or inspect entire repositories merely to learn what they do.
+- Search the local vendor cache before repeating remote fetches.
+- Do not inspect entire repositories merely to learn what they do.
 - Do not compare more than a few credible options unless the decision has high switching cost.
 - Cache durable decisions in `docs/context/DECISIONS.md` when future sessions would otherwise repeat the same comparison.
 - Reuse prior evaluations if the tool and requirements have not materially changed.
