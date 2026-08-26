@@ -48,6 +48,19 @@ These are persistent cross-project operating rules for Codex.
 - Do not save tokens by guessing, skipping required validation, or ignoring material uncertainty.
 - Use OpenViking (`https://github.com/volcengine/OpenViking`) as an architectural reference for hierarchical/tiered context loading and observable retrieval when relevant; do not introduce it as a dependency without evaluating license, privacy, operational cost, and project fit.
 
+## Verification budget
+- Treat full-repository verification as a costly integration gate, not as a default exploration step.
+- Do not run the entire test/lint/typecheck/build matrix at the start of a session merely to "confirm state" when a recent green result exists for unchanged relevant code.
+- Reuse fresh, durable green evidence when the corresponding code has not changed.
+- After a focused change, run the narrowest checks that directly cover the changed behavior first.
+- Documentation-only, handoff-only, metadata-only, or other non-functional edits do not justify a full suite unless the repository explicitly proves otherwise.
+- If a repository provides a selective verification command, changed-file test router, verification ledger, or cached evidence mechanism, use it before any full-suite command.
+- Unknown or cross-cutting changes should escalate to a full gate rather than be guessed safe, but reserve that gate for the end of the implementation window whenever practical.
+- Default budget: at most one full verification pass per execution window. A second full pass is justified only after a concrete failure and its corrective change, or when an explicit release/integration rule requires it.
+- CI may independently run full integration checks; do not duplicate the same full proof locally without a concrete reason.
+- When a full suite consumes a material share of the available agent window, record/reuse its result as durable evidence so the next session does not pay for the same proof again.
+- Token optimization must never weaken required production, safety, security, or irreversible-action gates.
+
 ## Durable execution continuity
 - Treat model context as a working view, not as the authoritative history of execution.
 - For multi-step, interruptible, long-running, multi-agent, or cross-session work, invoke `$durable-execution-memory` when available.
