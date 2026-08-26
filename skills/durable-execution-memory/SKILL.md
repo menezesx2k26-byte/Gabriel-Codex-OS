@@ -12,6 +12,7 @@ Treat conversation context as a working view, not as the authoritative history o
 - A shorter prompt or compacted context must never imply that earlier verified work stopped existing.
 - Preserve evidence of what happened even when only a summary is needed for the next step.
 - Recovery should reconstruct from durable artifacts and Git state before relying on memory.
+- Persist reusable experience as structured assets, not as an undifferentiated chat dump.
 
 ## What counts as a durable execution fact
 Record facts that would matter after an interruption, handoff, context compaction, or new agent/session, including:
@@ -25,6 +26,16 @@ Record facts that would matter after an interruption, handoff, context compactio
 - exact next safe step
 
 Do not dump transient chain-of-thought or verbose narration. Record operational evidence and decisions only.
+
+## Memory asset discipline
+When useful, separate durable knowledge by role instead of loading everything everywhere:
+- **facts/preferences/constraints**: stable information needed for future decisions
+- **scenario/project context**: compact working context for a specific project or workflow
+- **skills/workflows**: proven reusable procedures with triggers, steps, and validation rules
+- **docs/wiki**: structured domain knowledge and operating documentation
+- **code graph/impact knowledge**: symbols, callers/callees, dependencies, and change-impact relationships
+
+Give an agent only the smallest relevant loadout for its role and task. Do not turn all durable memory into a global prompt.
 
 ## Repository authority
 Use repo-local durable context when available:
@@ -49,6 +60,7 @@ If the repository uses another established convention, preserve it instead of fo
 - Keep updates concise and factual.
 - Separate `completed`, `verified`, `blocked`, and `next` states.
 - Store commands/results only when they materially prove or explain state.
+- Promote a repeated successful procedure into a reusable skill or documented workflow when future sessions would otherwise rediscover it.
 - Never store secrets, credentials, tokens, private keys, or sensitive payloads in durable context.
 
 ## Before pausing or handing off
@@ -69,7 +81,9 @@ Update `HANDOFF.md` when present. Update `STATE.md` when the durable project sta
 - If an interrupted action may have partially completed, inspect state before retrying.
 - If state cannot be reconstructed confidently, mark the uncertainty explicitly instead of inventing continuity.
 
-## External architectural reference
-Apache Maka (`https://github.com/apache/maka`) is an architectural reference for durable execution records, recovery, and separation between saved execution history and the reduced context presented to a model.
+## External architectural references
+Apache Maka (`https://github.com/apache/maka`) is a reference for durable execution records, recovery, and separation between saved execution history and the reduced context presented to a model.
 
-Use it for architectural inspiration when designing continuity or runtime workflows, not as a mandatory dependency or source of truth. Preserve the project's own constraints and avoid copying runtime architecture that the task does not require.
+TencentDB Agent Memory (`https://github.com/TencentCloud/TencentDB-Agent-Memory`) is a reference for turning conversations, docs, code knowledge, and proven workflows into separately managed memory assets; for layered memory retrieval; and for assigning different memory loadouts to different agents instead of broadcasting all context globally.
+
+Use these for architectural inspiration when designing continuity or memory workflows, not as mandatory dependencies or sources of truth. Preserve project constraints and avoid importing infrastructure the task does not require.
