@@ -22,9 +22,11 @@ These are persistent cross-project operating rules for Codex.
 - Treat model context as a scarce working set: load the smallest sufficient context for the next correct decision.
 - For large, long-running, repository-heavy, multi-agent, or reference-heavy tasks, invoke `$context-budget-manager` when available.
 - Prefer targeted files, sections, diffs, searches, and task-specific skills over full-repository or full-reference loading.
+- Prefer tiered context loading: establish relevance with a short abstract, then an overview, and load full detail only when implementation or validation requires it.
 - Route to the smallest applicable skill set instead of accumulating every available instruction or reference in the prompt.
 - Stop exploration when sufficient evidence exists to implement and validate a project-compatible solution.
 - Do not save tokens by guessing, skipping required validation, or ignoring material uncertainty.
+- Use OpenViking (`https://github.com/volcengine/OpenViking`) as an architectural reference for hierarchical/tiered context loading and observable retrieval when relevant; do not introduce it as a dependency without evaluating license, privacy, operational cost, and project fit.
 
 ## Durable execution continuity
 - Treat model context as a working view, not as the authoritative history of execution.
