@@ -91,6 +91,10 @@ These are persistent cross-project operating rules for Codex.
 - Distinguish clearly between current state, completed work, and next steps.
 
 ## Mandatory frontend/UI routing
+- **NO FRONTEND EDIT BEFORE TOOL PREFLIGHT.** Before the first frontend/UI code edit, invoke `$frontend-quality-reviewer` and run its `scripts/preflight.py` against the target repo. A missing required specialist is a blocker, not permission to silently skip it.
+- For meaningful visual frontend work, direct specialist use must be observable: `$taste-skill` before visual direction/implementation, `$impeccable` after a coherent implementation, and `$emil-design-eng` for the craft/motion decision. Keep them staged; do not load them as competing authorities.
+- If the current harness cannot invoke a discoverable skill by name, load that installed `SKILL.md` directly and record `manual-load`; never claim `invoked` when it was not.
+- Every frontend/UI completion or handoff must include a `UI_TOOL_RECEIPT` with preflight, reuse, visual source, Taste, animation route, Impeccable, Emil, Playwright/browser proof, anti-vibecode, and final gates. `N/A` requires a concrete reason.
 - For every task that creates, redesigns, implements, reviews, polishes, or accepts a meaningful frontend/UI, invoke `$frontend-quality-reviewer` when available.
 - The frontend router is staged, not additive: repo/reuse audit -> approved design source -> contextual Taste direction -> implementation in the incumbent stack -> Impeccable critique/audit/polish -> Emil Kowalski interaction craft -> Playwright/browser proof -> repo hard gates.
 - Project/user truth outranks external design taste. When `docs/UI_ANTI_VIBECODE.md` exists, treat it as a binding local rubric and run its automated/manual gates before acceptance.

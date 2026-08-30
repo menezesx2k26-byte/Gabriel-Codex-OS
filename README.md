@@ -7,8 +7,9 @@ Base reutilizável para deixar o Codex mais consistente em qualquer projeto.
 - `global/AGENTS.md`: regras globais de comportamento para Codex
 - `skills/`: skills reutilizáveis em escopo de usuário
 - `templates/`: arquivos-base para novos repositórios
-- `scripts/install.ps1`: instala AGENTS global + skills no seu usuário e sincroniza o vendor toolkit
-- `scripts/update.ps1`: atualiza a instalação local a partir deste repositório
+- `scripts/install.ps1`: instala no PowerShell/Windows
+- `scripts/install.sh`: instala nativamente no WSL/Linux
+- `scripts/update.ps1` / `scripts/update.sh`: reaplicam a instalação e sincronizam vendors
 - `scripts/bootstrap-project.ps1`: cria a estrutura inicial de um novo projeto
 
 ## Estratégia
@@ -47,12 +48,19 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\install.ps1
 ```
 
+No WSL/Linux, use:
+
+```bash
+./scripts/install.sh
+```
+
 Isso vai:
 - copiar `global/AGENTS.md` para `~/.codex/AGENTS.md`
 - copiar as skills para `~/.agents/skills`
 - criar `~/.agents/vendor/`
 - clonar ou atualizar, de forma rasa, os repositórios do reuse toolkit
 - manter os vendors fora do working set padrão: ficam disponíveis para busca seletiva, não carregados em todo prompt
+- promover Taste, Impeccable, gpt-tasteskill e Emil para `~/.agents/skills/`, tornando-os realmente descobríveis/invocáveis; `gpt-tasteskill` continua opt-in por política
 
 ### Reuse vendor toolkit
 
@@ -79,6 +87,12 @@ Depois de alterar este repositório:
 
 ```powershell
 .\scripts\update.ps1
+```
+
+No WSL/Linux:
+
+```bash
+./scripts/update.sh
 ```
 
 O update chama o instalador e também sincroniza o vendor toolkit.

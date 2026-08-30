@@ -36,6 +36,31 @@ require_text "scripts/install.ps1" 'https://github.com/emilkowalski/skills.git' 
 require_text "scripts/install.ps1" 'Name = "playwright-mcp"' "installer playwright MCP vendor"
 require_text "scripts/install.ps1" 'SparsePaths = @(".agents/skills/impeccable")' "installer sparse impeccable"
 require_text "scripts/install.ps1" "sparse-checkout set" "installer sparse checkout support"
+require_text "global/AGENTS.md" "NO FRONTEND EDIT BEFORE TOOL PREFLIGHT" "hard pre-edit frontend gate"
+require_text "skills/frontend-quality-reviewer/SKILL.md" 'MUST invoke `$taste-skill`' "direct taste invocation"
+require_text "skills/frontend-quality-reviewer/SKILL.md" 'MUST invoke `$impeccable`' "direct impeccable invocation"
+require_text "skills/frontend-quality-reviewer/SKILL.md" 'MUST invoke `$emil-design-eng`' "direct emil invocation"
+require_text "skills/frontend-quality-reviewer/SKILL.md" "UI_TOOL_RECEIPT" "tool receipt requirement"
+require_text "scripts/install.ps1" 'Target = "taste-skill"' "discoverable taste install"
+require_text "scripts/install.ps1" 'Target = "impeccable"' "discoverable impeccable install"
+require_text "scripts/install.ps1" 'Target = "emil-design-eng"' "discoverable emil install"
+require_text "scripts/install.ps1" "Installing discoverable vendor skill" "vendor skill promotion"
+require_text "skills/frontend-quality-reviewer/SKILL.md" "scripts/preflight.py" "preflight referenced by skill"
+if [[ ! -f "$ROOT/skills/frontend-quality-reviewer/scripts/preflight.py" ]]; then
+  printf 'FAIL frontend preflight script missing\n' >&2
+  failures=$((failures + 1))
+else
+  printf 'PASS frontend preflight script exists\n'
+fi
+if [[ ! -x "$ROOT/scripts/install.sh" ]]; then
+  printf 'FAIL WSL installer missing or not executable\n' >&2
+  failures=$((failures + 1))
+else
+  printf 'PASS WSL installer exists\n'
+fi
+require_text "scripts/install.sh" "taste-skill" "WSL installer taste promotion"
+require_text "scripts/install.sh" "impeccable" "WSL installer impeccable promotion"
+require_text "scripts/install.sh" "emil-design-eng" "WSL installer emil promotion"
 
 if (( failures > 0 )); then
   printf '\n%d frontend UI stack check(s) failed.\n' "$failures" >&2

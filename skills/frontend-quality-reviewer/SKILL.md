@@ -19,6 +19,12 @@ Use this order when instructions conflict:
 
 External taste never overrides evidence. If the repo contains `docs/UI_ANTI_VIBECODE.md`, it is a binding local review rubric.
 
+## Hard pre-edit gate
+
+Before the first frontend/UI code edit, run `python3 scripts/preflight.py --repo <target-repo> --intent "<task>"` from this skill directory (or the installed equivalent). Do not edit frontend code if required specialist skills are missing. The preflight proves availability and selects an implementation-motion route; it does not replace the specialist invocations.
+
+If the harness supports skill invocation, use it. If it does not, directly read the installed `SKILL.md` and record `manual-load` in the receipt. Never silently skip a required phase.
+
 ## Required workflow
 
 ### 0. Reuse and incumbent audit
@@ -33,7 +39,7 @@ An explicit Figma design, supplied screenshot/mock, brand system, or approved re
 
 ### 2. Direction pass — Taste Skill
 
-Consult the contextual Taste Skill at `~/.agents/vendor/taste-skill/skills/taste-skill/SKILL.md` when available. Use it to challenge generic LLM defaults and to infer a design direction from audience, brief, references, and brand.
+MUST invoke `$taste-skill` before establishing or changing visual direction. The installed source is `~/.agents/skills/taste-skill/SKILL.md`; if named invocation is unsupported, load that file directly and record `manual-load`. Use it to challenge generic LLM defaults and to infer a design direction from audience, brief, references, and brand.
 
 Do **not** make `gpt-tasteskill` the global baseline. Its opinionated AIDA/Bento/GSAP defaults can conflict with the project or anti-vibecode rules. Use it only for an explicitly experimental/Awwwards-like direction, and local/user constraints still win.
 
@@ -54,13 +60,13 @@ Do not stack Motion and GSAP as owners of the same animation domain without a cl
 
 ### 4. Evaluation pass — Impeccable
 
-Consult `~/.agents/vendor/impeccable/.agents/skills/impeccable/SKILL.md` when available. Route only to the Impeccable playbook that fits the need. For a shipping pass, prefer a bounded sequence such as `critique` -> targeted fixes -> `audit` -> `polish`; do not run every command or enter an open-ended polish loop.
+MUST invoke `$impeccable` after a coherent implementation and before visual acceptance. If named invocation is unsupported, load `~/.agents/skills/impeccable/SKILL.md` directly and record `manual-load`. Route only to the Impeccable playbook that fits the need. For a shipping pass, prefer a bounded sequence such as `critique` -> targeted fixes -> `audit` -> `polish`; do not run every command or enter an open-ended polish loop.
 
 Use Impeccable as a critic/editor. Its own rule that the brief wins is compatible with this workflow; local contracts remain superior.
 
 ### 5. Craft pass — Emil Kowalski
 
-Consult `~/.agents/vendor/emil-skills/skills/emil-design-eng/SKILL.md` when available for interaction and motion polish. Add motion only when it has a purpose. Frequent interactions should be instant or restrained; avoid hover/scroll animation that exists only to look sophisticated.
+MUST invoke `$emil-design-eng` for the craft/motion decision before visual acceptance, even when the correct decision is no additional motion. If named invocation is unsupported, load `~/.agents/skills/emil-design-eng/SKILL.md` directly and record `manual-load`. Add motion only when it has a purpose. Frequent interactions should be instant or restrained; avoid hover/scroll animation that exists only to look sophisticated.
 
 ### 6. Browser proof — Playwright
 
@@ -87,3 +93,11 @@ A choice is acceptable when brand, content, or interaction gives it a real job.
 ## Completion evidence
 
 Report the visual source used, reuse decision, major critique findings fixed, browser/device coverage, relevant build/test results, and any intentional exception. Tool success alone is never acceptance.
+
+## UI_TOOL_RECEIPT
+
+No frontend/UI task is complete without a visible receipt in the final response or handoff:
+
+`preflight | reuse | visual_source | taste | animation_route | impeccable | emil | playwright | anti_vibecode | gates`
+
+Use `invoked`, `manual-load`, `executed`, or `N/A: <reason>` accurately. Missing fields mean the acceptance gate is incomplete.

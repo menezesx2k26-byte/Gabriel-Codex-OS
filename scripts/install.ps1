@@ -30,6 +30,13 @@ $VendorRepos = @(
     @{ Name = "originkit"; Url = "https://github.com/vellum-ai/originkit.git" }
 )
 
+$VendorSkills = @(
+    @{ Repo = "taste-skill"; Source = "skills\taste-skill"; Target = "taste-skill" },
+    @{ Repo = "taste-skill"; Source = "skills\gpt-tasteskill"; Target = "gpt-tasteskill" },
+    @{ Repo = "impeccable"; Source = ".agents\skills\impeccable"; Target = "impeccable" },
+    @{ Repo = "emil-skills"; Source = "skills\emil-design-eng"; Target = "emil-design-eng" }
+)
+
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Warning "Git is not available; skipping vendor toolkit sync."
 } else {
@@ -54,6 +61,18 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
                 git clone --depth 1 --filter=blob:none $Repo.Url $Destination | Out-Host
             }
         }
+    }
+}
+
+foreach ($Skill in $VendorSkills) {
+    $Source = Join-Path (Join-Path $VendorDir $Skill.Repo) $Skill.Source
+    $Target = Join-Path $SkillsDir $Skill.Target
+    if (Test-Path $Source) {
+        Write-Host "Installing discoverable vendor skill: $($Skill.Target)"
+        if (Test-Path $Target) { Remove-Item $Target -Recurse -Force }
+        Copy-Item $Source $Target -Recurse -Force
+    } else {
+        Write-Warning "Vendor skill source missing: $Source"
     }
 }
 
