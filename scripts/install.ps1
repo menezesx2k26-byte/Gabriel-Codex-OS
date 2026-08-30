@@ -22,7 +22,12 @@ $VendorRepos = @(
     @{ Name = "andrej-karpathy-skills"; Url = "https://github.com/multica-ai/andrej-karpathy-skills.git" },
     @{ Name = "ponytail"; Url = "https://github.com/DietrichGebert/ponytail.git" },
     @{ Name = "tencentdb-agent-memory"; Url = "https://github.com/TencentCloud/TencentDB-Agent-Memory.git" },
-    @{ Name = "ego-lite"; Url = "https://github.com/citrolabs/ego-lite.git" }
+    @{ Name = "ego-lite"; Url = "https://github.com/citrolabs/ego-lite.git" },
+    @{ Name = "impeccable"; Url = "https://github.com/pbakaus/impeccable.git"; SparsePaths = @(".agents/skills/impeccable") },
+    @{ Name = "taste-skill"; Url = "https://github.com/Leonxlnx/taste-skill.git"; SparsePaths = @("skills/taste-skill", "skills/gpt-tasteskill") },
+    @{ Name = "emil-skills"; Url = "https://github.com/emilkowalski/skills.git"; SparsePaths = @("skills/emil-design-eng") },
+    @{ Name = "playwright-mcp"; Url = "https://github.com/microsoft/playwright-mcp.git" },
+    @{ Name = "originkit"; Url = "https://github.com/vellum-ai/originkit.git" }
 )
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -33,12 +38,21 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
         if (Test-Path (Join-Path $Destination ".git")) {
             Write-Host "Updating vendor reference: $($Repo.Name)"
             git -C $Destination fetch --depth 1 origin | Out-Host
+            if ($Repo.ContainsKey("SparsePaths")) {
+                git -C $Destination sparse-checkout init --cone | Out-Host
+                git -C $Destination sparse-checkout set $Repo.SparsePaths | Out-Host
+            }
             git -C $Destination reset --hard origin/HEAD | Out-Host
         } elseif (Test-Path $Destination) {
             Write-Warning "Skipping $($Repo.Name): destination exists but is not a Git repository: $Destination"
         } else {
             Write-Host "Installing vendor reference: $($Repo.Name)"
-            git clone --depth 1 --filter=blob:none $Repo.Url $Destination | Out-Host
+            if ($Repo.ContainsKey("SparsePaths")) {
+                git clone --depth 1 --filter=blob:none --sparse $Repo.Url $Destination | Out-Host
+                git -C $Destination sparse-checkout set $Repo.SparsePaths | Out-Host
+            } else {
+                git clone --depth 1 --filter=blob:none $Repo.Url $Destination | Out-Host
+            }
         }
     }
 }

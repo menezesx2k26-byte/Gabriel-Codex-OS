@@ -65,6 +65,11 @@ O instalador mantém estes repositórios em `~/.agents/vendor/`:
 - `ponytail` — padrões YAGNI/reuse/minimal-code para evitar implementação desnecessária: https://github.com/DietrichGebert/ponytail
 - `tencentdb-agent-memory` — memória em camadas, extração de skills, Wiki, CodeGraph e loadouts de memória por agente; usar como referência/candidato, não ativar runtime automaticamente: https://github.com/TencentCloud/TencentDB-Agent-Memory
 - `ego-lite` — automação de navegador orientada a agentes, com composição de ações para reduzir observe/act loops e tool calls; usar como referência/candidato e respeitar compatibilidade de plataforma: https://github.com/citrolabs/ego-lite
+- `impeccable` — crítica/auditoria/polish de UI por fases: https://github.com/pbakaus/impeccable
+- `taste-skill` — direção contextual anti-slop; o `gpt-tasteskill` é opt-in, não baseline: https://github.com/Leonxlnx/taste-skill
+- `emil-skills` — design engineering, motion e microinterações: https://github.com/emilkowalski/skills
+- `playwright-mcp` — candidato condicional para controle stateful; Playwright normal continua baseline: https://github.com/microsoft/playwright-mcp
+- `originkit` — referência de componentes/padrões reutilizáveis após checar o projeto: https://github.com/vellum-ai/originkit
 
 Esses vendors são fontes de consulta/candidatos de reutilização. Código ou runtime de terceiros não é ativado automaticamente; adoção real continua sujeita a licença, segurança, privacidade e compatibilidade com o projeto.
 
@@ -116,6 +121,12 @@ NovoProjeto/
 - **OpenViking** — referência de context engineering para filesystem de contexto, carregamento L0/L1/L2, recuperação hierárquica e rastreabilidade da recuperação; usar como inspiração arquitetural e avaliar AGPLv3, privacidade e custo operacional antes de qualquer adoção como dependência: https://github.com/volcengine/OpenViking
 - **TencentDB Agent Memory** — referência para memória em camadas, assets de memória, extração de skills, Wiki/CodeGraph e loadout seletivo por agente: https://github.com/TencentCloud/TencentDB-Agent-Memory
 - **ego-lite** — referência/candidato para browser automation com menos round-trips, composição de ações e espaços isolados por agente: https://github.com/citrolabs/ego-lite
+
+## Frontend/UI persistente
+
+Para frontend visual, `$frontend-quality-reviewer` coordena o pipeline permanente: reuse-first + fonte visual aprovada -> Taste contextual -> implementação no stack existente -> Impeccable -> Emil Kowalski -> Playwright -> gates locais. As referências externas são especialistas por fase; não viram autoridades concorrentes nem justificam trocar arquitetura.
+
+Na implementação de motion, o roteamento permanente é: CSS/WAAPI para o simples; Motion para componentes/blocos/layout/gestures; GSAP para timeline/scroll/pinning/scrub complexo; Three.js apenas para 3D real. Essas bibliotecas são condicionais por projeto e não entram no vendor cache global automaticamente.
 
 ## Próximas skills sugeridas
 

@@ -23,6 +23,11 @@ Current vendor references:
 - `ponytail` — YAGNI/reuse/minimal-code patterns for coding agents.
 - `tencentdb-agent-memory` — layered memory assets, skills, wiki/code graph, and per-agent context loadouts.
 - `ego-lite` — token-efficient browser automation patterns and an optional agent browser integration.
+- `impeccable` — frontend critique/audit/polish skill and production-grade UI craft reference.
+- `taste-skill` — contextual anti-slop frontend direction; prefer its standard Taste skill over opinionated `gpt-tasteskill` as the default.
+- `emil-skills` — Emil Kowalski's design-engineering guidance for purposeful motion, component feel, and microinteraction polish.
+- `playwright-mcp` — Microsoft Playwright MCP reference/candidate for stateful browser control; regular project Playwright remains the baseline unless MCP use is justified and allowed.
+- `originkit` — reusable UI component/reference source when local project patterns do not already solve the need.
 
 These repositories are reference/candidate sources. Do not load them wholesale into context and do not activate third-party runtime code automatically.
 
@@ -52,6 +57,10 @@ Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, 
 - coding-behavior pitfalls -> `andrej-karpathy-skills`
 - YAGNI / smallest-code solution -> `ponytail`
 - browser automation / web workflows -> `ego-lite` when the environment and constraints fit
+- frontend/UI creation, redesign, or acceptance -> `$frontend-quality-reviewer`; stage `taste-skill` for direction, `impeccable` for critique/audit/polish, and `emil-skills` for interaction craft rather than loading them concurrently
+- UI component/pattern reuse -> current project/user repos first, then approved sources such as `originkit` (and Skiper UI when the project contract permits that registry)
+- stateful browser MCP verification -> `playwright-mcp` only when it materially improves the proof and the project's MCP/security gate permits it; otherwise use regular Playwright
+- frontend motion implementation -> existing CSS/WAAPI/dependency first; then Motion for component/layout/gesture motion, GSAP for complex timeline/scroll choreography, and Three.js only for real 3D. Check `motiondivision/motion`, `greensock/GSAP`, and `mrdoob/three.js` as official upstream references without cloning them into the global vendor cache by default.
 
 Inspect indexes, README sections, names, or targeted search results first. Do not ingest the whole repository.
 
@@ -134,6 +143,7 @@ Avoid adding a large framework to solve a tiny isolated problem.
 - Use `$context-budget-manager` to keep discovery narrow.
 - Use `$llm-app-pattern-library` for LLM application patterns.
 - Use `$visual-quality-director` for visual tasks.
+- Use `$frontend-quality-reviewer` for frontend/UI creation, redesign, review, polish, and acceptance.
 - Use `$durable-execution-memory` to persist important adoption decisions and avoid repeating research across sessions.
 
 ## Completion rule
