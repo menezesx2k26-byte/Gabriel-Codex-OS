@@ -1,6 +1,6 @@
 ---
 name: persistent-conversation-controller
-description: Use when an explicitly authorized AI conversation must supervise a long-running workflow across browser/chat context limits, session expiry, idle worker responses, or repeated controller-window rollover until verified completion.
+description: Use when the user sends /persist or an explicitly authorized AI conversation must supervise a long-running workflow across browser/chat context limits, session expiry, idle worker responses, or repeated controller-window rollover until verified completion.
 ---
 
 # Persistent Conversation Controller
