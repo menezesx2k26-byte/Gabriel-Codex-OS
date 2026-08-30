@@ -1,8 +1,8 @@
-# Controller Baton
+# Controller Baton and Successor Message
 
-The baton is supervisory metadata, not a second project source of truth.
+The baton is supervisory metadata, not a second project source of truth. Project facts remain in Git and the established project handoff.
 
-For repository work, project facts remain in Git and the repo's established handoff/context files. Store only controller continuity metadata at:
+Store controller continuity metadata at:
 
 `~/.agents/continuations/<RUN_ID>/CONTROL.md`
 
@@ -12,7 +12,7 @@ Recommended fields:
 RUN_ID: <stable workflow id>
 GENERATION: <positive integer>
 CONTROLLER_ID: <conversation/window identifier if available>
-STATUS: ACTIVE | PREPARING_TAKEOVER | STALE | DONE
+STATUS: ACTIVE | PREPARING_TAKEOVER | ROLLOVER_INCOMPLETE | AUTH_REQUIRED | STALE | DONE
 STARTED_AT: <timestamp>
 CLAIMED_AT: <timestamp>
 PROJECT_ROOT: <path or NONE>
@@ -20,24 +20,55 @@ TASK_ID: <task id or NONE>
 PROJECT_HANDOFF: <authoritative handoff path or NONE>
 BRANCH: <branch or NONE>
 HEAD: <sha or NONE>
-CURRENT_STATE: <WORKING|WAITING_TOOL|IDLE_INCOMPLETE|CONTEXT_RISK|BLOCKED|DONE>
+CURRENT_STATE: <state>
 NEXT_SAFE_ACTION: <one concise action>
+SUCCESSOR_SURFACE: <surface or NONE>
+HANDOFF_INJECTED_AT: <timestamp or NONE>
+TAKEOVER_EVIDENCE: <bounded evidence or NONE>
 ```
 
-## Generation rule
+Do not store secrets, cookies, credentials, tokens, chain-of-thought, or full transcripts.
+## Successor Chat Message
+
+The successor must receive a concise **self-contained handoff message**. A path or an `@skill` mention alone is insufficient.
+
+```text
+PERSISTENT CONVERSATION CONTROLLER TAKEOVER
+RUN_ID: <RUN_ID>
+GENERATION: <N+1>
+
+This handoff is self-contained; do not assume an @skill mention resolves automatically.
+If Remote Desktop Commander is available, first read the installed controller skill at:
+- Windows: %USERPROFILE%\.agents\skills\persistent-conversation-controller\SKILL.md
+- WSL: ~/.agents/skills/persistent-conversation-controller/SKILL.md
+
+Goal: <original workflow goal>
+Project: <root or NONE>
+Task: <task id or NONE>
+Branch / HEAD: <branch> / <sha>
+Authoritative handoff: <path or NONE>
+Controller baton: ~/.agents/continuations/<RUN_ID>/CONTROL.md
+
+Completed: <concise verified progress>
+Verified: <tests/evidence>
+Current state: <state>
+Remaining acceptance: <what is still unmet>
+Exact next action: <one reversible next action>
+
+You are the successor controller. Reconstruct from Git/project handoff first and do not redo verified work. Claim generation <N+1> by updating CONTROL.md to STATUS: ACTIVE with CLAIMED_AT, then emit the complete line `CLAIM <RUN_ID> G<N+1>`. Continue supervising until verified DoD. Before your own context limit, perform another verified rollover using this same protocol.
+```
+Keep this message short enough for reliable UI injection. Prefer references to authoritative project files over copying long logs, but include enough current state that the successor can recognize the task before opening those files.
+
+## Generation Rule
 
 The active controller is the latest **successfully claimed** generation.
 
-Rollover from generation `N`:
+1. Generation `N` writes `STATUS: PREPARING_TAKEOVER`.
+2. `N` opens an authenticated successor chat and injects the self-contained successor message.
+3. The successor reconstructs state and claims `N+1` by writing `STATUS: ACTIVE` and `CLAIMED_AT`; when chat output is available it also emits `CLAIM <RUN_ID> G<N+1>`.
+4. `N` re-reads the baton and observes the complete claim. Partial or truncated text is activity only and must not retire `N`.
+5. Only then does `N` become stale.
 
-1. `N` writes `STATUS: PREPARING_TAKEOVER` and the intended next generation.
-2. `N` opens the successor and gives it the baton path.
-3. The successor reads project state first, then claims `N+1` by writing its generation, controller id, `STATUS: ACTIVE`, and `CLAIMED_AT`.
-4. `N` re-reads the baton. Only after observing the valid `N+1` claim does it become stale.
-5. A controller that observes a higher claimed generation must not issue further mutations.
+If the successor is logged out, lacks the controller tooling required to update durable state, the message was not visibly submitted, or takeover cannot be observed, keep `N` authoritative and classify `ROLLOVER_INCOMPLETE` or `AUTH_REQUIRED` as appropriate.
 
-If two candidate successors appear, only the generation recorded in the baton is authoritative. Re-observe before any mutation when ownership is ambiguous.
-
-Do not store secrets, cookies, tokens, credentials, chain-of-thought, or full chat transcripts in this file.
-
-When the workflow reaches verified `DONE`, record `STATUS: DONE` and the final project handoff/HEAD. Retain or remove the local baton according to the user's normal cleanup policy; it is operational metadata, not required project history.
+When verified DoD is reached, record `STATUS: DONE`, final project handoff, and HEAD.
