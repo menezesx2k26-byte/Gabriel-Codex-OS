@@ -9,6 +9,7 @@ README = (ROOT / "README.md").read_text(encoding="utf-8")
 VENDORS = {
     "motion-primitives": "https://github.com/ibelick/motion-primitives.git",
     "watermelon-platform": "https://github.com/WatermelonCorp/watermelon-platform.git",
+    "fontsource": "https://github.com/fontsource/fontsource.git",
     "OpenManus": "https://github.com/FoundationAgents/OpenManus.git",
     "skill-manus": "https://github.com/reubenjohn/skill-manus.git",
 }
@@ -21,10 +22,12 @@ class ReuseRouterVendorTests(unittest.TestCase):
                 self.assertIn(f'Name = "{name}"', INSTALL)
                 self.assertIn(f'Url = "{url}"', INSTALL)
 
-    def test_router_exposes_visual_and_manus_routes(self):
+    def test_router_exposes_visual_typography_and_manus_routes(self):
         expected = [
             "motion-primitives",
             "watermelon-platform",
+            "fontsource",
+            "https://github.com/google/fonts",
             "OpenManus",
             "skill-manus",
             "haikei.app",
