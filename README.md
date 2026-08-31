@@ -65,8 +65,14 @@ O instalador mantém estes repositórios em `~/.agents/vendor/`:
 - `ponytail` — padrões YAGNI/reuse/minimal-code para evitar implementação desnecessária: https://github.com/DietrichGebert/ponytail
 - `tencentdb-agent-memory` — memória em camadas, extração de skills, Wiki, CodeGraph e loadouts de memória por agente; usar como referência/candidato, não ativar runtime automaticamente: https://github.com/TencentCloud/TencentDB-Agent-Memory
 - `ego-lite` — automação de navegador orientada a agentes, com composição de ações para reduzir observe/act loops e tool calls; usar como referência/candidato e respeitar compatibilidade de plataforma: https://github.com/citrolabs/ego-lite
+- `motion-primitives` — componentes animados para interfaces modernas, úteis para motion/UI em frontend: https://github.com/ibelick/motion-primitives
+- `watermelon-platform` — registry e vitrine de componentes React/shadcn para exploração e reaproveitamento de UI: https://github.com/WatermelonCorp/watermelon-platform
+- `OpenManus` — framework open-source para agentes gerais no estilo Manus: https://github.com/FoundationAgents/OpenManus
+- `skill-manus` — CLI/skill sem dependências para a API do Manus, útil como integração de agente: https://github.com/reubenjohn/skill-manus
 
 Esses vendors são fontes de consulta/candidatos de reutilização. Código ou runtime de terceiros não é ativado automaticamente; adoção real continua sujeita a licença, segurança, privacidade e compatibilidade com o projeto.
+
+Observação: `haikei.app` entra no router como opção web/reference-only para geração de backgrounds SVG, mas não entra no vendor toolkit até existir um upstream oficial de Git verificado.
 
 ## Atualização
 
@@ -105,6 +111,8 @@ NovoProjeto/
 - trate Git/repositório como evidência autoritativa de execução
 - use carregamento progressivo de contexto: resumo curto -> visão geral -> detalhe apenas quando necessário
 - procure primeiro no vendor toolkit antes de pesquisa ampla ou implementação customizada
+- para motion/UI e libraries visuais, priorize `motion-primitives`, `watermelon-platform` e `haikei.app` antes de reinventar assets ou componentes
+- para workflows no estilo Manus, avalie `OpenManus` e `skill-manus` antes de construir integrações/CLIs do zero
 - para automação web, prefira composição de ações e snapshots semânticos quando isso reduzir loops sem perder segurança/observabilidade
 - quando mudar instruções globais ou skills, inicie nova sessão do Codex
 
