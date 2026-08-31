@@ -74,6 +74,8 @@ Esses vendors são fontes de consulta/candidatos de reutilização. Código ou r
 
 Observação: `haikei.app` entra no router como opção web/reference-only para geração de backgrounds SVG, mas não entra no vendor toolkit até existir um upstream oficial de Git verificado.
 
+Para Manus, a fonte oficial no GitHub é `https://github.com/manus-ai`. `OpenManus` e `skill-manus` permanecem referências comunitárias/candidatos de integração e não devem ser tratados como o core oficial do Manus.
+
 ## Atualização
 
 Depois de alterar este repositório:
