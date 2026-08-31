@@ -25,6 +25,7 @@ Current vendor references:
 - `ego-lite` — token-efficient browser automation patterns and an optional agent browser integration.
 - `motion-primitives` — animated UI primitives/components for modern frontend interfaces.
 - `watermelon-platform` — React component registry and UI inspiration/reference source.
+- `fontsource` — open-source font catalog and self-hosting packages for web typography, including Google Fonts and additional open-source families.
 - `OpenManus` — open-source general AI agent framework for Manus-style agent workflows.
 - `skill-manus` — zero-dependency Manus API CLI + skill wrapper for agentic integration.
 
@@ -36,6 +37,18 @@ Manus source policy:
 - For the official Manus product, service, API, or first-party integrations, prefer first-party sources: `https://github.com/manus-ai` and `manus.im`.
 - `OpenManus` is a community open-source framework for Manus-style architecture/reference; do not describe it as the official Manus implementation.
 - `skill-manus` is a community Manus API wrapper/skill and should be treated as an integration candidate, not a first-party SDK unless independently verified.
+
+## Typography source policy
+For web typography, inspect the project first. Reuse its existing type system when it is adequate; do not replace fonts just because Fontsource is available.
+
+When new free/open fonts are materially useful:
+- prefer `fontsource` as the first implementation/catalog route for self-hosted web fonts and framework/package integration;
+- verify the exact font family's license before adoption, because licenses are family-specific;
+- prefer self-hosting or package-based loading when it fits the stack and improves privacy, reliability, caching, or deployment control;
+- avoid pulling the whole font catalog into an application or prompt; inspect metadata and install only the selected family, weights, styles, and subsets;
+- for Google Fonts families, the canonical `google/fonts` repository remains a useful upstream source of font files and per-family license metadata.
+
+Do not interpret "free font" as permission to ignore redistribution, modification, Reserved Font Name, attribution, or embedding terms.
 
 ## Search ladder
 Use this order unless the task gives a stronger source of truth:
@@ -65,6 +78,8 @@ Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, 
 - browser automation / web workflows -> `ego-lite` when the environment and constraints fit
 - animated frontend motion/UI patterns -> `motion-primitives`
 - component registry / shadcn-style UI exploration -> `watermelon-platform`
+- free/open web fonts, self-hosting, font package selection -> `fontsource`
+- official Google Fonts files/license metadata -> `https://github.com/google/fonts`
 - official Manus product/API / first-party integrations -> `https://github.com/manus-ai` + `manus.im`
 - Manus-style open agent framework -> `OpenManus`
 - Manus API integration / CLI wrapper -> `skill-manus`
