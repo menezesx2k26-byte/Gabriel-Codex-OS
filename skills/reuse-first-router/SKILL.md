@@ -23,8 +23,19 @@ Current vendor references:
 - `ponytail` — YAGNI/reuse/minimal-code patterns for coding agents.
 - `tencentdb-agent-memory` — layered memory assets, skills, wiki/code graph, and per-agent context loadouts.
 - `ego-lite` — token-efficient browser automation patterns and an optional agent browser integration.
+- `motion-primitives` — animated UI primitives/components for modern frontend interfaces.
+- `watermelon-platform` — React component registry and UI inspiration/reference source.
+- `OpenManus` — open-source general AI agent framework for Manus-style agent workflows.
+- `skill-manus` — zero-dependency Manus API CLI + skill wrapper for agentic integration.
 
 These repositories are reference/candidate sources. Do not load them wholesale into context and do not activate third-party runtime code automatically.
+
+Haikei is a special case: `haikei.app` is useful as a web-first SVG/background generator reference, but there is no verified official upstream GitHub repository in this toolkit. Treat it as a remote/web option and do not assume unrelated `haikei` repositories are official.
+
+Manus source policy:
+- For the official Manus product, service, API, or first-party integrations, prefer first-party sources: `https://github.com/manus-ai` and `manus.im`.
+- `OpenManus` is a community open-source framework for Manus-style architecture/reference; do not describe it as the official Manus implementation.
+- `skill-manus` is a community Manus API wrapper/skill and should be treated as an integration candidate, not a first-party SDK unless independently verified.
 
 ## Search ladder
 Use this order unless the task gives a stronger source of truth:
@@ -52,6 +63,12 @@ Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, 
 - coding-behavior pitfalls -> `andrej-karpathy-skills`
 - YAGNI / smallest-code solution -> `ponytail`
 - browser automation / web workflows -> `ego-lite` when the environment and constraints fit
+- animated frontend motion/UI patterns -> `motion-primitives`
+- component registry / shadcn-style UI exploration -> `watermelon-platform`
+- official Manus product/API / first-party integrations -> `https://github.com/manus-ai` + `manus.im`
+- Manus-style open agent framework -> `OpenManus`
+- Manus API integration / CLI wrapper -> `skill-manus`
+- SVG background generation (web-first, not local vendor) -> `haikei.app`
 
 Inspect indexes, README sections, names, or targeted search results first. Do not ingest the whole repository.
 
