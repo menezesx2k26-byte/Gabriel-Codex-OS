@@ -33,6 +33,11 @@ class ReuseRouterVendorTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, ROUTER)
 
+    def test_router_distinguishes_official_manus_from_community_candidates(self):
+        self.assertIn("https://github.com/manus-ai", ROUTER)
+        self.assertIn("official Manus", ROUTER)
+        self.assertIn("https://github.com/manus-ai", README)
+
     def test_readme_documents_new_routes_and_haikei_policy(self):
         for marker in ["motion-primitives", "watermelon-platform", "OpenManus", "skill-manus", "haikei.app"]:
             with self.subTest(marker=marker):
