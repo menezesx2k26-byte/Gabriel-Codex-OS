@@ -22,7 +22,11 @@ $VendorRepos = @(
     @{ Name = "andrej-karpathy-skills"; Url = "https://github.com/multica-ai/andrej-karpathy-skills.git" },
     @{ Name = "ponytail"; Url = "https://github.com/DietrichGebert/ponytail.git" },
     @{ Name = "tencentdb-agent-memory"; Url = "https://github.com/TencentCloud/TencentDB-Agent-Memory.git" },
-    @{ Name = "ego-lite"; Url = "https://github.com/citrolabs/ego-lite.git" }
+    @{ Name = "ego-lite"; Url = "https://github.com/citrolabs/ego-lite.git" },
+    @{ Name = "motion-primitives"; Url = "https://github.com/ibelick/motion-primitives.git" },
+    @{ Name = "watermelon-platform"; Url = "https://github.com/WatermelonCorp/watermelon-platform.git" },
+    @{ Name = "OpenManus"; Url = "https://github.com/FoundationAgents/OpenManus.git" },
+    @{ Name = "skill-manus"; Url = "https://github.com/reubenjohn/skill-manus.git" }
 )
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -47,4 +51,5 @@ Write-Host "Installed global AGENTS.md to $CodexDir"
 Write-Host "Installed skills to $SkillsDir"
 Write-Host "Synced reuse-first vendor toolkit to $VendorDir"
 Write-Host "Vendor repositories are references/candidate sources; they are not automatically loaded into every prompt."
+Write-Host "Haikei remains a web/reference-only router option until a verified official Git repository exists."
 Write-Host "Start a new Codex session to load updates."
