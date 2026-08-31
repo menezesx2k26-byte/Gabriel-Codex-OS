@@ -25,6 +25,7 @@ $VendorRepos = @(
     @{ Name = "ego-lite"; Url = "https://github.com/citrolabs/ego-lite.git" },
     @{ Name = "motion-primitives"; Url = "https://github.com/ibelick/motion-primitives.git" },
     @{ Name = "watermelon-platform"; Url = "https://github.com/WatermelonCorp/watermelon-platform.git" },
+    @{ Name = "fontsource"; Url = "https://github.com/fontsource/fontsource.git" },
     @{ Name = "OpenManus"; Url = "https://github.com/FoundationAgents/OpenManus.git" },
     @{ Name = "skill-manus"; Url = "https://github.com/reubenjohn/skill-manus.git" }
 )
