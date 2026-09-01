@@ -50,6 +50,21 @@ When new free/open fonts are materially useful:
 
 Do not interpret "free font" as permission to ignore redistribution, modification, Reserved Font Name, attribution, or embedding terms.
 
+## Frontend composition policy
+Reuse must not collapse visual design into catalog assembly. Before choosing a component, effect, template, or asset library for frontend work, establish a one-sentence project-specific visual thesis from the project's real domain, audience, content, brand, and existing visual material.
+
+- Treat component/effect libraries as an implementation source, not visual direction. Their demo composition, tokens, typography, motion, spacing, and copy are reference material, not defaults to preserve.
+- Prefer domain-specific assets, diagrams, objects, data, imagery, and interaction metaphors. Generic decoration is not a substitute for project identity.
+- Default to 1–2 signature interactions and make each one serve the thesis or product behavior. More components or effects are not evidence of better design.
+- Apply the transplant test before accepting the visual result: if changing only the logo, name, and copy makes the same composition plausible for an unrelated SaaS, agency, local business, or product, the result is still generic and must be redesigned.
+
+## Existing composed baselines
+Preserve the approved higher-level routes already used by the active router:
+- website/web-application SEO and GEO work -> `web-seo-baseline`, composing `nowork-studio/notfair-plugin` with the approved Alireza SEO skill set;
+- gamification work -> `gamification-baseline`, composing `trophyso/ui` for UI/interaction patterns with `marquespq/questro` for mechanics/state-model patterns.
+
+These are composed baselines, not permission to import either upstream wholesale.
+
 ## Search ladder
 Use this order unless the task gives a stronger source of truth:
 

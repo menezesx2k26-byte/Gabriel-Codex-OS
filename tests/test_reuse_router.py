@@ -31,10 +31,27 @@ class ReuseRouterVendorTests(unittest.TestCase):
             "OpenManus",
             "skill-manus",
             "haikei.app",
+            "nowork-studio/notfair-plugin",
+            "web-seo-baseline",
+            "trophyso/ui",
+            "marquespq/questro",
+            "gamification-baseline",
         ]
         for marker in expected:
             with self.subTest(marker=marker):
                 self.assertIn(marker, ROUTER)
+
+    def test_router_requires_project_specific_frontend_identity(self):
+        lowered = ROUTER.lower()
+        for marker in (
+            "project-specific visual thesis",
+            "implementation source, not visual direction",
+            "domain-specific assets",
+            "signature interactions",
+            "transplant test",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
 
     def test_router_distinguishes_official_manus_from_community_candidates(self):
         self.assertIn("https://github.com/manus-ai", ROUTER)
