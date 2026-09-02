@@ -143,7 +143,10 @@ async function cleanupRunScratchQuietly({ browser, state }) {
 async function closeFailedSuccessor({ browser, state, outcome }) {
   let closed = false;
   if (browser?.closeRunChat && outcome?.chatId) {
-    try { await browser.closeRunChat({ state, chatId: outcome.chatId }); closed = true; } catch {}
+    try {
+      const result = await browser.closeRunChat({ state, chatId: outcome.chatId });
+      closed = Boolean(result?.ok === true && Number(result?.closed ?? 1) > 0);
+    } catch {}
   }
   if (!closed && browser?.closeRunTarget && outcome?.targetId) {
     try { await browser.closeRunTarget({ state, targetId: outcome.targetId }); } catch {}
@@ -202,10 +205,10 @@ async function finalizeDoneLifecycle({ controlPath, state, browser, now, generat
       current = { ...current, BROWSER_CLEANUP_STATUS: 'SENT', BROWSER_CLEANED_AT: now.toISOString(), BROWSER_CLEANUP_ATTEMPTS: '0' };
     } catch {
       const attempts = Number.parseInt(current.BROWSER_CLEANUP_ATTEMPTS || '0', 10) + 1;
-      current = { ...current, BROWSER_CLEANUP_STATUS: attempts >= 3 ? 'GAVE_UP' : 'FAILED', BROWSER_CLEANUP_ATTEMPTS: String(attempts) };
+      current = { ...current, BROWSER_CLEANUP_STATUS: 'FAILED', BROWSER_CLEANUP_ATTEMPTS: String(attempts) };
     }
     writeControlAtomic(controlPath, current);
-    if (current.BROWSER_CLEANUP_STATUS === 'FAILED') return { action: 'BROWSER_CLEANUP_RETRY', generation };
+    if (current.BROWSER_CLEANUP_STATUS !== 'SENT') return { action: 'BROWSER_CLEANUP_RETRY', generation };
   }
   return { action: 'FINALIZED', generation };
 }
