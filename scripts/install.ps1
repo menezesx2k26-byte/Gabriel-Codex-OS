@@ -34,7 +34,10 @@ $VendorRepos = @(
     @{ Name = "watermelon-platform"; Url = "https://github.com/WatermelonCorp/watermelon-platform.git" },
     @{ Name = "fontsource"; Url = "https://github.com/fontsource/fontsource.git" },
     @{ Name = "OpenManus"; Url = "https://github.com/FoundationAgents/OpenManus.git" },
-    @{ Name = "skill-manus"; Url = "https://github.com/reubenjohn/skill-manus.git" }
+    @{ Name = "skill-manus"; Url = "https://github.com/reubenjohn/skill-manus.git" },
+    @{ Name = "pr-agent"; Url = "https://github.com/The-PR-Agent/pr-agent.git" },
+    @{ Name = "reviewdog"; Url = "https://github.com/reviewdog/reviewdog.git" },
+    @{ Name = "OpenReviewer"; Url = "https://github.com/Ascent-AI-org/OpenReviewer.git" }
 )
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
