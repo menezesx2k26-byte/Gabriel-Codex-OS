@@ -37,6 +37,7 @@ A continuidade segue o princípio de que **contexto do modelo não é histórico
 - `llm-app-pattern-library`: consulta seletiva a padrões e exemplos de agentes, RAG, multimodal, voice, generative UI, always-on e multi-agent antes de introduzir arquitetura ou dependências novas.
 - `context-budget-manager`: controla o working set de contexto, usa carregamento progressivo e evita leituras, referências e reexploração desnecessárias sem sacrificar validação.
 - `reuse-first-router`: procura primeiro por soluções existentes e canivetes suíços antes de autorizar implementação customizada.
+- `/revise`: rigorous code review orchestration with deterministic checks, PR-Agent, reviewdog, and OpenReviewer-style refute-or-drop verification.
 
 ## Instalação
 
@@ -69,6 +70,9 @@ O instalador mantém estes repositórios em `~/.agents/vendor/`:
 - `watermelon-platform` — registry e vitrine de componentes React/shadcn para exploração e reaproveitamento de UI: https://github.com/WatermelonCorp/watermelon-platform
 - `OpenManus` — framework open-source para agentes gerais no estilo Manus: https://github.com/FoundationAgents/OpenManus
 - `skill-manus` — CLI/skill sem dependências para a API do Manus, útil como integração de agente: https://github.com/reubenjohn/skill-manus
+- `pr-agent` - community PR-Agent for semantic PR/diff review: https://github.com/The-PR-Agent/pr-agent
+- `reviewdog` - deterministic linter/analyzer aggregation scoped to the relevant diff: https://github.com/reviewdog/reviewdog
+- `OpenReviewer` - self-hosted reviewer used as the refute-or-drop second-pass reference: https://github.com/Ascent-AI-org/OpenReviewer
 
 Esses vendors são fontes de consulta/candidatos de reutilização. Código ou runtime de terceiros não é ativado automaticamente; adoção real continua sujeita a licença, segurança, privacidade e compatibilidade com o projeto.
 
