@@ -1025,3 +1025,27 @@ test('failed successor also sweeps residual internal scratch tabs', async () => 
   assert.equal(result.action, 'ROLLOVER_INCOMPLETE');
   assert.ok(sweeps >= 1);
 });
+test('failed successor chat close must prove ok before skipping target fallback', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-close-proof-'));
+  makeRun(root, { RUN_ID: 'close-proof', GENERATION: '4', STATUS: 'CONTEXT_RISK', PROJECT_ROOT: 'C:\\repo' });
+  const closedTargets = [];
+  const result = await orchestrator.tick({ root, browser: {
+    async createSuccessor() { return { status: 'BROWSER_ERROR', chatId: 'failed-chat', targetId: 'failed-target' }; },
+    async closeRunChat() { return { ok: false, closed: 0 }; },
+    async closeRunTarget({ targetId }) { closedTargets.push(targetId); return { ok: true, closed: 1 }; },
+  }, notifier: {}, rolloverMinutes: 0, clock: () => new Date('2026-09-02T18:00:00Z') });
+  assert.equal(result.action, 'ROLLOVER_INCOMPLETE');
+  assert.deepEqual(closedTargets, ['failed-target']);
+});
+
+test('DONE cleanup keeps durable retry debt instead of giving up after repeated failures', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-cleanup-debt-'));
+  const controlPath = makeRun(root, { RUN_ID: 'cleanup-debt', GENERATION: '8', STATUS: 'DONE', PROJECT_ROOT: 'C:\\repo',
+    NOTIFICATION_STATUS: 'SENT', CHAT_TITLE_STATUS: 'SKIPPED_SAFE', BROWSER_CLEANUP_STATUS: 'FAILED', BROWSER_CLEANUP_ATTEMPTS: '2' });
+  const result = await orchestrator.tick({ root, browser: { async cleanupRun() { throw new Error('still dirty'); } },
+    notifier: {}, rolloverMinutes: 9999, clock: () => new Date('2026-09-02T18:00:00Z') });
+  const final = readControl(controlPath);
+  assert.equal(result.action, 'BROWSER_CLEANUP_RETRY');
+  assert.equal(final.BROWSER_CLEANUP_STATUS, 'FAILED');
+  assert.equal(final.BROWSER_CLEANUP_ATTEMPTS, '3');
+});
