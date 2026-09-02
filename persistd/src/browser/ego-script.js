@@ -1,8 +1,11 @@
+const { buildCommanderSetupScript } = require('./commander-setup');
+
 function js(value) { return JSON.stringify(value); }
 
 function buildSuccessorScript({ runId, message, nextGeneration }) {
   const taskName = `persist:${runId}`;
   const marker = `CLAIM ${runId} G${nextGeneration}`;
+  const commanderSetup = buildCommanderSetupScript();
   return `
 let task = null
 let successorTargetId = null
@@ -45,28 +48,7 @@ if (authRequired) {
   }
   if (!ready) throw new Error('ChatGPT composer not ready')
 
-  const commanderAttached = async () => Boolean(await composer.evaluate((el) => {
-    const form = el.closest('form')
-    return Boolean(form && form.innerText && form.innerText.includes('Remote Desktop Commander'))
-  }))
-
-  if (!(await commanderAttached())) {
-    const attachButton = page.getByRole('button', { name: /adicionar arquivos e mais|attach files|add files|tools/i })
-    if ((await attachButton.count()) === 0) throw new Error('ChatGPT tools button not found')
-    await attachButton.first().click()
-    await page.waitForTimeout(200)
-    await page.keyboard.type('Remote Desktop Commander')
-    const commander = page.locator('.popover .__menu-item').filter({ hasText: /Remote Desktop Commander/i })
-    const optionReady = await commander.first().waitFor({ state: 'visible', timeout: 5000 })
-    if (!optionReady) throw new Error('Remote Desktop Commander option not found')
-    await commander.first().click()
-    const verified = await page.waitForFunction(() => {
-      const el = document.querySelector('#prompt-textarea') || document.querySelector('[role="textbox"][contenteditable="true"]')
-      const form = el && el.closest('form')
-      return Boolean(form && form.innerText && form.innerText.includes('Remote Desktop Commander'))
-    }, undefined, { timeout: 5000 })
-    if (!verified) throw new Error('Remote Desktop Commander attachment not verified')
-  }
+  ${commanderSetup}
 
   await composer.fill(${js(message)})
   const sendButton = page.locator('[data-testid="send-button"]')

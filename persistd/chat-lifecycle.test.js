@@ -1122,3 +1122,18 @@ test('orphan cleanup debt is paid before normal active-run work resumes', async 
   assert.equal(state.BROWSER_ORPHAN_STATUS, 'SENT');
   assert.equal(state.BROWSER_ORPHAN_TARGET_ID, 'NONE');
 });
+
+test('successor and claim confirmation embed the same Commander bootstrap primitive', () => {
+  const { buildCommanderSetupScript } = require('./src/browser/commander-setup');
+  const shared = buildCommanderSetupScript().trim();
+  const successor = egoScript.buildSuccessorScript({ runId: 'shared-commander', message: 'baton', nextGeneration: 2 });
+  const confirmation = require('./src/browser/conversation-script').buildSendMessageScript({
+    runId: 'shared-commander', chatId: 'chat-2', message: 'confirm',
+    verifyLine: 'CLAIM_CONFIRMED shared-commander G2 nonce', attachCommander: true, waitForAssistantStart: true,
+  });
+  assert.ok(successor.includes(shared));
+  assert.ok(confirmation.includes(shared));
+  assert.match(shared, /composer-plus-btn/);
+  assert.match(shared, /Desktop Commander/);
+  assert.match(shared, /Remote Desktop Commander/);
+});
