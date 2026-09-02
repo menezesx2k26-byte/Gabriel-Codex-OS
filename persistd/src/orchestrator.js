@@ -146,7 +146,7 @@ async function closeFailedSuccessor({ browser, state, outcome }) {
   if (browser?.closeRunChat && outcome?.chatId) {
     try {
       const result = await browser.closeRunChat({ state, chatId: outcome.chatId });
-      closed = result?.ok === true;
+      closed = Boolean(result?.ok === true && Number(result?.closed ?? 1) > 0);
     } catch {}
   }
   if (!closed && browser?.closeRunTarget && outcome?.targetId) {
