@@ -1,78 +1,102 @@
 ---
 name: persistent-conversation-controller
-description: Use when the user sends /persist or an explicitly authorized AI conversation must supervise a long-running workflow across browser/chat context limits, session expiry, idle worker responses, or repeated controller-window rollover until verified completion.
+description: Use when the user sends /persist or an explicitly authorized AI conversation must supervise a long-running workflow across chat context limits, session expiry, idle workers, tool loss, or repeated controller rollover until verified completion.
 ---
 
 # Persistent Conversation Controller
 
 ## Contract
 
-Persist the **controller**, not one model context. Git and the project's established handoff remain authoritative; browser conversations are replaceable generations.
+Persist the **workflow controller**, never one model context. Git and the project's established handoff remain authoritative for project facts. `CONTROL.md` is authoritative for controller generation, lease, notification, and takeover state.
 
-A rollover is a **verified UI transaction**. `CONTROL.md` saved, a tab opened, or a path reported is never completion by itself.
+A rollover is a **durable state transaction**. Browser tabs, chat titles, and visible UI are transport evidence or presentation only; they are never consensus or authority by themselves.
 
-Explicit invocation authorizes routine reversible choices and controller rollovers inside the existing task scope. It does not authorize secrets access, destructive actions, security bypasses, material scope expansion, or merge/deploy absent prior authority.
+Every new persisted workflow should record a short human `DISPLAY_NAME` for user-facing chat organization (for example `Conthabil`, `Geometria`, or `MenezesDev`). Prefer the project/product name the user would naturally recognize; do not use branch names, task IDs, dates, or internal controller jargon as the display name.
 
-**REQUIRED SUB-SKILLS:** `durable-execution-memory`, `project-handoff-manager`, plus `ego-browser` for an authenticated agent browser or `windows-desktop-operator` for an authenticated interactive browser/app. Remote Desktop Commander is transport/recovery, not completion evidence.
+`persistd` is the preferred controller. ChatGPT, Codex, Claude, Gemini, or another model is a worker. Codex is a worker, never a required controller dependency; when it is unavailable, use the authenticated ChatGPT worker path.
 
-The successor message must be self-contained. Never assume a fresh chat resolves an `@skill` mention. When Commander is available, instruct the successor to read the installed skill from `~/.agents/skills/persistent-conversation-controller/SKILL.md` or `%USERPROFILE%\.agents\skills\persistent-conversation-controller\SKILL.md` before mutating state.
+## Logical Decision Authority
+
+Explicit `/persist` invocation authorizes the controller to execute without asking when an action is all of:
+- reversible;
+- low risk;
+- inside the already-authorized task scope;
+- logically determined by current evidence as the best safe option.
+
+Do not stop for routine implementation choices, retries, worker selection, rollover timing, test commands, safe diagnostics, or equivalent reversible paths.
+
+Stop only for authentication/MFA or genuinely required manual control, destructive or irreversible work lacking prior authority, material scope expansion, a materially ambiguous decision that logic/evidence cannot resolve, explicit cancellation, or the same blocker surviving three materially different safe attempts.
+
+## Required Components
+
+- `durable-execution-memory` and `project-handoff-manager` for project continuity when applicable.
+- local `persistd` runtime for generation/lease arbitration.
+- authenticated `ego-browser` task space as the primary browser transport.
+- Remote Desktop Commander as a worker capability/recovery transport when local project access is required; it is not controller consensus evidence.
+- `windows-desktop-operator` and the Dev-Orquestra Windows Interactive Control plane for native Windows UI work.
+- Browser Bridge / Playwright for non-controller browser work when an authorized browser session is available.
+
+Before any local, browser, or interactive mutation, **read and obey `references/remote-control-contract.md`**. This is a hard capability gate, not optional guidance. The worker must use the highest applicable healthy structured control layer and may not silently downgrade to ad-hoc shell UI automation or coordinates.
 
 ## State Loop
 
 | State | Action |
 |---|---|
-| `WORKING` / `WAITING_TOOL` | Observe; do not interfere |
-| `IDLE_INCOMPLETE` | Send unmet acceptance + exact next reversible action |
-| `CONTEXT_RISK` | Start preventive rollover |
-| `ROLLOVER_INCOMPLETE` | Repair missing UI/tooling step; old generation retains authority |
-| `AUTH_REQUIRED` | Preserve state; request only required manual authentication |
-| `BLOCKED` | Try materially different safe diagnostics |
-| `DONE` | Independently verify DoD |
-An ended response, saved baton, idle tab, or worker saying "done" is not completion evidence.
+| `ACTIVE` / `WORKING` | Observe and refresh lease; do not interfere while useful work continues |
+| `WAITING_TOOL` | Recover tooling through the safest available worker path |
+| `IDLE_INCOMPLETE` | Continue with unmet acceptance and the exact next reversible action |
+| `CONTEXT_RISK` | Start preventive code-first rollover |
+| `PREPARING_TAKEOVER` | N remains authoritative while successor is created |
+| `ROLLOVER_INCOMPLETE` | Retry with materially different safe diagnostics; N remains authoritative |
+| `AUTH_REQUIRED` | Preserve state and notify the user; never bypass authentication |
+| `BLOCKED` | Try up to three materially different safe approaches |
+| `DONE` | Preserve verified DoD and perform mandatory terminal notification |
 
-## Surface Routing
+An ended model response, saved baton, opened tab, submitted prompt, visible claim text, or worker saying "done" is never sufficient by itself.
 
-Use the first **authenticated, controllable** surface:
+## Generation and Lease Rule
 
-1. authenticated `ego-browser` task space;
-2. existing interactive browser/app via `windows-desktop-operator`;
-3. if semantic UI cannot reach the composer, only the existing approved raw-input path.
+The active controller generation is the highest **durably claimed** generation.
 
-A fresh successor must also have the **controller tooling explicitly enabled before handoff injection**. For ChatGPT, attach `Remote Desktop Commander` to the successor composer and verify the visible tool chip before sending the baton. Exact UI guidance lives in `references/controller-baton.md`.
+1. `persistd` obtains the run lock and refreshes the lease for `G<N>`.
+2. It writes `STATUS: PREPARING_TAKEOVER`, `NEXT_GENERATION: N+1`, and a fresh `CLAIM_NONCE` while keeping `GENERATION: N`.
+3. The browser transport reuses `persist:<RUN_ID>` and creates an authenticated successor chat through semantic DOM automation.
+4. When local project access is needed, the transport attaches Remote Desktop Commander programmatically and verifies its composer attachment state.
+5. The self-contained baton is submitted.
+6. Successor `G<N+1>` reads this controller skill and `CONTROL.md` read-only, does not mutate the project, and replies with the wake line plus the exact nonce-bound request `CLAIM_REQUEST <RUN_ID> G<N+1> <CLAIM_NONCE>`.
+7. `persistd` verifies that exact request in the successor chat, validates predecessor generation, status, `NEXT_GENERATION`, and nonce, and performs the durable promotion locally through the installed `claimGeneration()` implementation. Visible browser text alone never retires N.
+8. After the durable promotion succeeds, `persistd` sends `CLAIM_CONFIRMED <RUN_ID> G<N+1> <CLAIM_NONCE>` to the same chat. Only after that confirmation may the successor reconstruct project state and continue without redoing verified work. Failed confirmation delivery never rolls authority back; it remains pending for retry. `CLAIM_CONFIRMED_AT` records delivery; `CLAIM_RESUMED_AT` is written only after the successor assistant turn is observed starting or already running, and is the monotonic proof that execution actually resumed.
 
-Never bypass Local Executor policy. A logged-out page or a chat without required controller tooling is not a valid successor.
+Two generations must never mutate concurrently. A higher unexpected generation or foreign live lease is a conflict to preserve and diagnose, never overwrite.
 
-## Rollover Transaction
+## Browser Transport
 
-For a ~25-minute controller window, target rollover near 20 minutes; otherwise use ~80% of the known limit.
+Primary transport is the already-authenticated persistent `ego-browser` Chromium task space. Reuse login state; do not re-authenticate per generation.
 
-Rollover is complete only when **all** are observed:
+On Windows, keep a persisted browser profile on the same browser family that created it. The installed persistd transport prefers Microsoft Edge for the existing ego profile and must resolve the standard `Program Files (x86)` Edge path even when the parent environment omits `PROGRAMFILES(X86)`; never silently fall back to Chrome with that same profile.
 
-1. Project handoff and `~/.agents/continuations/<RUN_ID>/CONTROL.md` are current.
-2. An authenticated successor conversation is actually opened.
-3. Required controller tooling is attached to that successor and visibly confirmed.
-4. The successor composer receives the **handoff text itself** from `references/controller-baton.md`, not merely a file path.
-5. The message is submitted and visibly appears in the successor chat.
-6. The successor responds or begins work from that handoff. A partial or truncated response is activity, never a claim.
-7. Generation `N+1` claims control by updating durable controller state to `ACTIVE` with `CLAIMED_AT` and, when chat output is available, emits the complete marker `CLAIM <RUN_ID> G<N+1>`. Generation `N` re-reads durable state and observes the complete claim; only then may `N` become stale.
+Use semantic DOM/role/text locators and stable composer selectors. Do not make screenshots, coordinates, window focus, or pixel recognition part of the normal rollover path. Visual automation is fallback-only and never sufficient takeover evidence.
 
-If any item is missing, use `ROLLOVER_INCOMPLETE` or `AUTH_REQUIRED` and keep generation `N` authoritative. Never report “activated” merely because durable files exist.
+For every active run, keep at most one live browser tab: the durably promoted current chat. After successful promotion, prune predecessor, home, blank, and scratch tabs from that task space. If a successor attempt fails before durable promotion, close that exact chat or target immediately. Browser discovery is metadata-only: it may recover the task-space id, but it must never add chat ids to `CHAT_HISTORY_JSON`, change `CHAT_ID`, or authorize a rename. Only the exact successor `chatId` that passed nonce-bound durable promotion may be appended to history or renamed. Task-space cleanup at DONE remains a second barrier. Before starting or retrying a rollover, if the current chat is still generating an assistant turn, defer with `WORKER_BUSY` without incrementing rollover attempts or creating a successor.
 
-Controller generations are supervisory replacements, not PLAN/IMPLEMENT/REVIEW project handoffs, so they do not consume project role-handoff limits.
+A real expired login, CAPTCHA, MFA, or account challenge becomes `AUTH_REQUIRED`. Preserve the current generation and ask only for the minimum manual authentication required.
 
-## Stop Rules
+## Terminal Notification
 
-Continue through ordinary rollover and reversible in-scope work. Stop only for verified DoD, explicit cancellation/scope change, irreversible action lacking authority, a material uninferable decision, authentication/MFA/manual control genuinely required, or the same blocker surviving three materially different safe attempts.
+`Gn` means the generation that reaches verified DoD, not a precomputed generation number. When `STATUS: DONE` is observed:
 
-## Hard Failures
+1. record `FINAL_GENERATION` and final project metadata;
+2. deliver exactly one terminal notification;
+3. prefer a user-visible completion response in the Gn ChatGPT conversation so normal ChatGPT app notification behavior can surface it;
+4. use a local Windows toast as fallback;
+5. mark `NOTIFICATION_STATUS: SENT` and `NOTIFIED_AT` only after delivery succeeds;
+6. do not perform historical/bulk rename at DONE; mark legacy pending title work `SKIPPED_SAFE`;
+7. immediately close the isolated `persist:<RUN_ID>` task space with `keep: false` so tabs opened by persistd do not remain open.
 
-- baton saved but no successor message;
-- handoff path reported instead of injected into chat;
-- successor opened without required controller plugin/tooling;
-- successor tab opened but message not submitted;
-- successor activity not observed;
-- partial/truncated successor text treated as a claim;
-- two generations mutating concurrently;
-- raw input used by bypassing the approved control path.
+The only allowed automatic rename is the exact newly promoted successor chat while the run is active, because its `chatId` is already nonce-bound to the durable claim. Historical/bulk rename is prohibited. Browser cleanup is post-DONE lifecycle work only and must not wait for cosmetic title work. It must never alter `GENERATION`, `CLAIM_NONCE`, lease validity, verified DoD, or takeover authority. Preserve `CHAT_HISTORY_JSON`, `CHAT_TITLE_STATUS`, and `BROWSER_CLEANUP_STATUS` across successor claims. Legacy DONE runs without explicit pending lifecycle fields are not reopened retroactively.
 
-Any of these means rollover is incomplete, not successful.
+Repeated daemon ticks must not duplicate a sent terminal notification. `AUTH_REQUIRED` and fatal blocked states may also notify; ordinary G1→G2→... rollovers stay silent.
+
+## Stop Rule
+
+Continue until verified DoD or one of the explicit stop conditions above. The controller, not an individual worker context, owns G1→G2→...→Gn continuity.
