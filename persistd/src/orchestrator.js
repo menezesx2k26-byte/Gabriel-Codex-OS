@@ -194,18 +194,23 @@ async function finalizeDoneLifecycle({ controlPath, state, browser, now, generat
     writeControlAtomic(controlPath, current);
   }
 
-  if (['PENDING', 'FAILED'].includes(current.BROWSER_CLEANUP_STATUS)) {
+  if (['PENDING', 'FAILED', 'RETRY_SCHEDULED'].includes(current.BROWSER_CLEANUP_STATUS)) {
+    const retryAt = Date.parse(current.BROWSER_CLEANUP_NEXT_AT || '');
+    if (current.BROWSER_CLEANUP_STATUS === 'RETRY_SCHEDULED' && Number.isFinite(retryAt) && now.getTime() < retryAt) {
+      return { action: 'BROWSER_CLEANUP_BACKOFF', generation, retryAt: current.BROWSER_CLEANUP_NEXT_AT };
+    }
     if (!browser?.cleanupRun) return { action: 'BROWSER_CLEANUP_PENDING', generation };
     try {
       const result = await browser.cleanupRun({ state: current });
       if (!(result?.closed || result?.done)) throw new Error('BROWSER_CLEANUP_INCOMPLETE');
-      current = { ...current, BROWSER_CLEANUP_STATUS: 'SENT', BROWSER_CLEANED_AT: now.toISOString(), BROWSER_CLEANUP_ATTEMPTS: '0' };
+      current = { ...current, BROWSER_CLEANUP_STATUS: 'SENT', BROWSER_CLEANED_AT: now.toISOString(), BROWSER_CLEANUP_ATTEMPTS: '0', BROWSER_CLEANUP_NEXT_AT: 'NONE', CLEANUP_DEBT_SINCE: 'NONE' };
     } catch {
       const attempts = Number.parseInt(current.BROWSER_CLEANUP_ATTEMPTS || '0', 10) + 1;
-      current = { ...current, BROWSER_CLEANUP_STATUS: attempts >= 3 ? 'GAVE_UP' : 'FAILED', BROWSER_CLEANUP_ATTEMPTS: String(attempts) };
+      const delayMs = Math.min(30 * 60_000, 2 * 60_000 * (2 ** Math.min(attempts - 1, 4)));
+      current = { ...current, BROWSER_CLEANUP_STATUS: 'RETRY_SCHEDULED', BROWSER_CLEANUP_ATTEMPTS: String(attempts), BROWSER_CLEANUP_NEXT_AT: new Date(now.getTime() + delayMs).toISOString(), CLEANUP_DEBT_SINCE: (current.CLEANUP_DEBT_SINCE && current.CLEANUP_DEBT_SINCE !== 'NONE') ? current.CLEANUP_DEBT_SINCE : now.toISOString() };
     }
     writeControlAtomic(controlPath, current);
-    if (current.BROWSER_CLEANUP_STATUS === 'FAILED') return { action: 'BROWSER_CLEANUP_RETRY', generation };
+    if (current.BROWSER_CLEANUP_STATUS === 'RETRY_SCHEDULED') return { action: 'BROWSER_CLEANUP_RETRY', generation, retryAt: current.BROWSER_CLEANUP_NEXT_AT };
   }
   return { action: 'FINALIZED', generation };
 }
@@ -258,7 +263,7 @@ async function tick({ root, browser, notifier, clock = () => new Date(), rollove
         writeControlAtomic(controlPath, state);
       }
       const pendingLifecycle = ['PENDING', 'FAILED'].includes(state.CHAT_TITLE_STATUS)
-        || ['PENDING', 'FAILED'].includes(state.BROWSER_CLEANUP_STATUS);
+        || ['PENDING', 'FAILED', 'RETRY_SCHEDULED'].includes(state.BROWSER_CLEANUP_STATUS);
       if (!pendingLifecycle) return { action: 'DONE', generation };
       return finalizeDoneLifecycle({ controlPath, state, browser, now, generation });
     }

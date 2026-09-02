@@ -15,8 +15,11 @@ function resolveRun(root, { includeSynthetic = false, includePendingDone = false
     try { state = readControl(controlPath); } catch { continue; }
     const status = (state.STATUS || '').toUpperCase();
     if (TERMINAL.has(status)) {
-      const pendingLifecycle = ['PENDING', 'FAILED'].includes(state.CHAT_TITLE_STATUS)
-        || ['PENDING', 'FAILED'].includes(state.BROWSER_CLEANUP_STATUS);
+      const cleanupStatus = state.BROWSER_CLEANUP_STATUS;
+      const cleanupNextAt = Date.parse(state.BROWSER_CLEANUP_NEXT_AT || '');
+      const cleanupDue = ['PENDING', 'FAILED'].includes(cleanupStatus)
+        || (cleanupStatus === 'RETRY_SCHEDULED' && (!Number.isFinite(cleanupNextAt) || cleanupNextAt <= Date.now()));
+      const pendingLifecycle = ['PENDING', 'FAILED'].includes(state.CHAT_TITLE_STATUS) || cleanupDue;
       const pendingDone = status === 'DONE' && includePendingDone
         && (state.NOTIFICATION_STATUS !== 'SENT' || pendingLifecycle);
       if (!pendingDone) continue;

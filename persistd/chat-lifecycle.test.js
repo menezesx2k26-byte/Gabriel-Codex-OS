@@ -1025,3 +1025,37 @@ test('failed successor also sweeps residual internal scratch tabs', async () => 
   assert.equal(result.action, 'ROLLOVER_INCOMPLETE');
   assert.ok(sweeps >= 1);
 });
+
+test('DONE browser cleanup debt never becomes terminally forgotten', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-cleanup-debt-'));
+  const controlPath = makeRun(root, {
+    RUN_ID: 'cleanup-debt', GENERATION: '7', STATUS: 'DONE', PROJECT_ROOT: 'C:\\repo',
+    NOTIFICATION_STATUS: 'SENT', CHAT_TITLE_STATUS: 'SKIPPED_SAFE', BROWSER_CLEANUP_STATUS: 'PENDING',
+  });
+  let nowMs = Date.parse('2026-09-02T20:00:00Z');
+  const browser = { async cleanupRun() { throw new Error('transient close failure'); } };
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    const result = await orchestrator.tick({ root, browser, notifier: {}, clock: () => new Date(nowMs), runId: 'cleanup-debt' });
+    const state = readControl(controlPath);
+    assert.equal(result.action, 'BROWSER_CLEANUP_RETRY');
+    assert.equal(state.BROWSER_CLEANUP_STATUS, 'RETRY_SCHEDULED');
+    assert.equal(state.BROWSER_CLEANUP_ATTEMPTS, String(attempt));
+    assert.notEqual(state.CLEANUP_DEBT_SINCE, 'NONE');
+    assert.notEqual(state.BROWSER_CLEANUP_NEXT_AT, 'NONE');
+    nowMs = Date.parse(state.BROWSER_CLEANUP_NEXT_AT) + 1;
+  }
+  assert.notEqual(readControl(controlPath).BROWSER_CLEANUP_STATUS, 'GAVE_UP');
+});
+
+test('resolver services due cleanup debt but not future cleanup debt', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-cleanup-resolver-'));
+  makeRun(root, {
+    RUN_ID: 'future-debt', STATUS: 'DONE', NOTIFICATION_STATUS: 'SENT', CHAT_TITLE_STATUS: 'SKIPPED_SAFE',
+    BROWSER_CLEANUP_STATUS: 'RETRY_SCHEDULED', BROWSER_CLEANUP_NEXT_AT: '2999-01-01T00:00:00.000Z',
+  });
+  makeRun(root, {
+    RUN_ID: 'due-debt', STATUS: 'DONE', NOTIFICATION_STATUS: 'SENT', CHAT_TITLE_STATUS: 'SKIPPED_SAFE',
+    BROWSER_CLEANUP_STATUS: 'RETRY_SCHEDULED', BROWSER_CLEANUP_NEXT_AT: '2000-01-01T00:00:00.000Z',
+  });
+  assert.equal(resolveRun(root, { includePendingDone: true }).RUN_ID, 'due-debt');
+});
