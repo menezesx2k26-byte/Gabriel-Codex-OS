@@ -1049,3 +1049,18 @@ test('DONE cleanup keeps durable retry debt instead of giving up after repeated 
   assert.equal(final.BROWSER_CLEANUP_STATUS, 'FAILED');
   assert.equal(final.BROWSER_CLEANUP_ATTEMPTS, '3');
 });
+
+
+test('successor and confirmation share one Commander bootstrap implementation', () => {
+  const { buildCommanderSetupScript } = require('./src/browser/commander-script');
+  const shared = buildCommanderSetupScript();
+  const successor = egoScript.buildSuccessorScript({ runId: 'bootstrap-shared', message: 'baton', nextGeneration: 2 });
+  const confirmation = require('./src/browser/conversation-script').buildSendMessageScript({
+    runId: 'bootstrap-shared', chatId: 'chat-2', message: 'confirm', verifyLine: 'CLAIM_CONFIRMED bootstrap-shared G2 nonce', attachCommander: true,
+  });
+  assert.match(shared, /PERSISTD_COMMANDER_BOOTSTRAP_V1/);
+  assert.match(shared, /composer-plus-btn/);
+  assert.match(shared, /Desktop Commander/);
+  assert.ok(successor.includes(shared));
+  assert.ok(confirmation.includes(shared));
+});
