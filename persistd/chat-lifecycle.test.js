@@ -1059,3 +1059,66 @@ test('resolver services due cleanup debt but not future cleanup debt', () => {
   });
   assert.equal(resolveRun(root, { includePendingDone: true }).RUN_ID, 'due-debt');
 });
+
+
+test('failed successor falls back to exact target when chat close is not verified', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-close-fallback-'));
+  const controlPath = makeRun(root, {
+    RUN_ID: 'close-fallback', GENERATION: '4', STATUS: 'CONTEXT_RISK', PROJECT_ROOT: 'C:\\repo',
+    STARTED_AT: '2026-09-01T12:00:00Z', CLAIMED_AT: '2026-09-01T12:00:00Z',
+  });
+  const calls = [];
+  const browser = {
+    async createSuccessor() { return { status: 'BROWSER_ERROR', chatId: 'failed-chat', targetId: 'failed-target' }; },
+    async closeRunChat() { calls.push('chat'); return { ok: false, status: 'CLOSE_INCOMPLETE' }; },
+    async closeRunTarget({ targetId }) { calls.push(`target:${targetId}`); return { ok: true, status: 'CLOSED_TARGET' }; },
+    async cleanupRunScratchTabs() { calls.push('scratch'); return { ok: true }; },
+  };
+  const result = await orchestrator.tick({ root, browser, notifier: {}, rolloverMinutes: 0,
+    clock: () => new Date('2026-09-01T12:01:00Z') });
+  assert.equal(result.action, 'ROLLOVER_INCOMPLETE');
+  assert.deepEqual(calls, ['scratch', 'chat', 'target:failed-target', 'scratch']);
+  assert.equal(readControl(controlPath).GENERATION, '4');
+});
+
+test('unverified failed-successor target becomes durable orphan cleanup debt', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-orphan-debt-'));
+  const controlPath = makeRun(root, {
+    RUN_ID: 'orphan-debt', GENERATION: '4', STATUS: 'CONTEXT_RISK', PROJECT_ROOT: 'C:\\repo',
+    STARTED_AT: '2026-09-01T12:00:00Z', CLAIMED_AT: '2026-09-01T12:00:00Z',
+  });
+  const browser = {
+    async createSuccessor() { return { status: 'BROWSER_ERROR', chatId: 'bad-chat', targetId: 'bad-target' }; },
+    async closeRunChat() { return { ok: false }; },
+    async closeRunTarget() { return { ok: false }; },
+    async cleanupRunScratchTabs() { return { ok: true }; },
+  };
+  await orchestrator.tick({ root, browser, notifier: {}, rolloverMinutes: 0,
+    clock: () => new Date('2026-09-01T12:01:00Z') });
+  const state = readControl(controlPath);
+  assert.equal(state.BROWSER_ORPHAN_TARGET_ID, 'bad-target');
+  assert.equal(state.BROWSER_ORPHAN_STATUS, 'RETRY_SCHEDULED');
+  assert.notEqual(state.BROWSER_ORPHAN_DEBT_SINCE, 'NONE');
+});
+
+test('orphan cleanup debt is paid before normal active-run work resumes', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-orphan-retry-'));
+  const controlPath = makeRun(root, {
+    RUN_ID: 'orphan-retry', GENERATION: '4', STATUS: 'ACTIVE', PROJECT_ROOT: 'C:\\repo',
+    STARTED_AT: '2026-09-02T20:00:00Z', CLAIMED_AT: '2026-09-02T20:00:00Z',
+    BROWSER_ORPHAN_TARGET_ID: 'stale-target', BROWSER_ORPHAN_STATUS: 'RETRY_SCHEDULED',
+    BROWSER_ORPHAN_NEXT_AT: '2000-01-01T00:00:00.000Z', BROWSER_ORPHAN_ATTEMPTS: '2',
+  });
+  const calls = [];
+  const browser = {
+    async closeRunTarget({ targetId }) { calls.push(targetId); return { ok: true }; },
+    async cleanupRunScratchTabs() { return { ok: true }; },
+  };
+  const result = await orchestrator.tick({ root, browser, notifier: {}, rolloverMinutes: 20,
+    clock: () => new Date('2026-09-02T20:01:00Z') });
+  const state = readControl(controlPath);
+  assert.equal(result.action, 'WATCHING');
+  assert.deepEqual(calls, ['stale-target']);
+  assert.equal(state.BROWSER_ORPHAN_STATUS, 'SENT');
+  assert.equal(state.BROWSER_ORPHAN_TARGET_ID, 'NONE');
+});

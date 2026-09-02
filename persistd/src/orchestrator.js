@@ -65,15 +65,16 @@ function isRolloverDue(state, now, rolloverMinutes) {
   return Number.isFinite(anchor) && now.getTime() - anchor >= rolloverMinutes * 60_000;
 }
 
-async function recordRolloverFailure({ controlPath, generation, now, notifier, reason }) {
+async function recordRolloverFailure({ controlPath, generation, now, notifier, reason, orphanTargetId = null }) {
   const current = readControl(controlPath);
   if (Number.parseInt(current.GENERATION || '0', 10) !== generation) {
     return { action: 'ROLLOVER_INCOMPLETE', generation };
   }
   const attempts = Number.parseInt(current.ROLLOVER_ATTEMPTS || '0', 10) + 1;
+  const orphanFields = orphanTargetId ? { BROWSER_ORPHAN_TARGET_ID: orphanTargetId, BROWSER_ORPHAN_STATUS: 'RETRY_SCHEDULED', BROWSER_ORPHAN_ATTEMPTS: '0', BROWSER_ORPHAN_NEXT_AT: now.toISOString(), BROWSER_ORPHAN_DEBT_SINCE: now.toISOString() } : {};
   if (attempts >= 3) {
     const blocked = {
-      ...current, STATUS: 'BLOCKED', LEASE_OWNER: `G${generation}`,
+      ...current, ...orphanFields, STATUS: 'BLOCKED', LEASE_OWNER: `G${generation}`,
       ROLLOVER_ATTEMPTS: String(attempts), BLOCKED_REASON: reason,
       BLOCKED_AT: now.toISOString(),
     };
@@ -82,7 +83,7 @@ async function recordRolloverFailure({ controlPath, generation, now, notifier, r
     return { action: 'BLOCKED', generation };
   }
   writeControlAtomic(controlPath, {
-    ...current, STATUS: 'ROLLOVER_INCOMPLETE', LEASE_OWNER: `G${generation}`,
+    ...current, ...orphanFields, STATUS: 'ROLLOVER_INCOMPLETE', LEASE_OWNER: `G${generation}`,
     ROLLOVER_ATTEMPTS: String(attempts), BLOCKED_REASON: reason,
   });
   return { action: 'ROLLOVER_INCOMPLETE', generation };
@@ -143,12 +144,38 @@ async function cleanupRunScratchQuietly({ browser, state }) {
 async function closeFailedSuccessor({ browser, state, outcome }) {
   let closed = false;
   if (browser?.closeRunChat && outcome?.chatId) {
-    try { await browser.closeRunChat({ state, chatId: outcome.chatId }); closed = true; } catch {}
+    try {
+      const result = await browser.closeRunChat({ state, chatId: outcome.chatId });
+      closed = result?.ok === true;
+    } catch {}
   }
   if (!closed && browser?.closeRunTarget && outcome?.targetId) {
-    try { await browser.closeRunTarget({ state, targetId: outcome.targetId }); } catch {}
+    try {
+      const result = await browser.closeRunTarget({ state, targetId: outcome.targetId });
+      closed = result?.ok === true;
+    } catch {}
   }
   await cleanupRunScratchQuietly({ browser, state });
+  return { ok: closed, targetId: outcome?.targetId || null };
+}
+
+async function retryOrphanTargetCleanup({ controlPath, state, browser, now }) {
+  const targetId = state.BROWSER_ORPHAN_TARGET_ID;
+  if (state.BROWSER_ORPHAN_STATUS !== 'RETRY_SCHEDULED' || !targetId || targetId === 'NONE') return { state, blocked: false };
+  const retryAt = Date.parse(state.BROWSER_ORPHAN_NEXT_AT || '');
+  if (Number.isFinite(retryAt) && now.getTime() < retryAt) return { state, blocked: true, action: 'ORPHAN_CLEANUP_BACKOFF' };
+  let result = null;
+  if (browser?.closeRunTarget) { try { result = await browser.closeRunTarget({ state, targetId }); } catch {} }
+  if (result?.ok === true) {
+    const updated = { ...state, BROWSER_ORPHAN_TARGET_ID: 'NONE', BROWSER_ORPHAN_STATUS: 'SENT', BROWSER_ORPHAN_ATTEMPTS: '0', BROWSER_ORPHAN_NEXT_AT: 'NONE', BROWSER_ORPHAN_DEBT_SINCE: 'NONE' };
+    writeControlAtomic(controlPath, updated);
+    return { state: updated, blocked: false };
+  }
+  const attempts = Number.parseInt(state.BROWSER_ORPHAN_ATTEMPTS || '0', 10) + 1;
+  const delayMs = Math.min(30 * 60_000, 60_000 * (2 ** Math.min(attempts - 1, 5)));
+  const updated = { ...state, BROWSER_ORPHAN_STATUS: 'RETRY_SCHEDULED', BROWSER_ORPHAN_ATTEMPTS: String(attempts), BROWSER_ORPHAN_NEXT_AT: new Date(now.getTime() + delayMs).toISOString(), BROWSER_ORPHAN_DEBT_SINCE: (state.BROWSER_ORPHAN_DEBT_SINCE && state.BROWSER_ORPHAN_DEBT_SINCE !== 'NONE') ? state.BROWSER_ORPHAN_DEBT_SINCE : now.toISOString() };
+  writeControlAtomic(controlPath, updated);
+  return { state: updated, blocked: true, action: 'ORPHAN_CLEANUP_RETRY' };
 }
 
 async function retryClaimConfirmation({ controlPath, state, browser, now }) {
@@ -224,6 +251,10 @@ async function tick({ root, browser, notifier, clock = () => new Date(), rollove
     const now = clock();
     let state = readControl(controlPath);
     let generation = Number.parseInt(state.GENERATION || '1', 10);
+    const orphanCleanup = await retryOrphanTargetCleanup({ controlPath, state, browser, now });
+    state = orphanCleanup.state;
+    if (orphanCleanup.blocked) return { action: orphanCleanup.action, generation, retryAt: state.BROWSER_ORPHAN_NEXT_AT };
+    generation = Number.parseInt(state.GENERATION || '1', 10);
     if (state.STATUS === 'BLOCKED') {
       await notifyBlockedOnce({ controlPath, state, notifier, now });
       return { action: 'BLOCKED', generation };
@@ -333,8 +364,8 @@ async function tick({ root, browser, notifier, clock = () => new Date(), rollove
 
     if (!legacyValidClaim) {
       if (outcome?.status === 'BROWSER_ERROR' || !outcome?.chatId) {
-        await closeFailedSuccessor({ browser, state, outcome });
-        return recordRolloverFailure({ controlPath, generation, now, notifier, reason: 'BROWSER_ERROR' });
+        const cleanup = await closeFailedSuccessor({ browser, state, outcome });
+        return recordRolloverFailure({ controlPath, generation, now, notifier, reason: 'BROWSER_ERROR', orphanTargetId: cleanup.ok ? null : cleanup.targetId });
       }
       const expectedRequest = buildClaimRequestLine(state.RUN_ID, nextGeneration, nonce);
       let requestVerified = outcome?.requestLine === expectedRequest;
@@ -345,15 +376,15 @@ async function tick({ root, browser, notifier, clock = () => new Date(), rollove
         } catch { requestVerified = false; }
       }
       if (!requestVerified) {
-        await closeFailedSuccessor({ browser, state, outcome });
-        return recordRolloverFailure({ controlPath, generation, now, notifier, reason: 'CLAIM_REQUEST_NOT_VERIFIED' });
+        const cleanup = await closeFailedSuccessor({ browser, state, outcome });
+        return recordRolloverFailure({ controlPath, generation, now, notifier, reason: 'CLAIM_REQUEST_NOT_VERIFIED', orphanTargetId: cleanup.ok ? null : cleanup.targetId });
       }
       try {
         claimed = claimGeneration({ controlPath, generation: nextGeneration, nonce, now });
         twoPhaseClaim = true;
       } catch {
-        await closeFailedSuccessor({ browser, state, outcome });
-        return recordRolloverFailure({ controlPath, generation, now, notifier, reason: 'CLAIM_REQUEST_REJECTED' });
+        const cleanup = await closeFailedSuccessor({ browser, state, outcome });
+        return recordRolloverFailure({ controlPath, generation, now, notifier, reason: 'CLAIM_REQUEST_REJECTED', orphanTargetId: cleanup.ok ? null : cleanup.targetId });
       }
     }
 
