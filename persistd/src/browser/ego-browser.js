@@ -5,6 +5,7 @@ const {
   buildSuccessorScript, buildTerminalScript, buildRenameChatsScript, buildDiscoverRunChatsScript, buildCloseRunChatScript, buildCloseRunTargetScript, buildCleanupRunScratchTabsScript, buildPruneRunTabsScript, buildRunChatActivityScript, buildCleanupScript, parseEgoResult,
 } = require('./ego-script');
 const { buildFindAssistantLineScript, buildSendMessageScript } = require('./conversation-script');
+const { ensureEdgeBrowser } = require('./edge-host');
 
 function parseWindowsShim(text) {
   const match = text.match(/^\s*"([^"\r\n]*node\.exe)"\s+"([^"\r\n]+\.mjs)"\s+%\*\s*$/mi);
@@ -54,13 +55,15 @@ function resolvePersistdBrowserEnv({ env = process.env, exists = fs.existsSync, 
   return next;
 }
 
-function runEgoScript(script, { command = 'ego-browser', timeoutMs = 120000, env = process.env } = {}) {
+async function runEgoScript(script, { command = 'ego-browser', timeoutMs = 120000, env = process.env, ensureBrowser = ensureEdgeBrowser, spawnFn = spawn } = {}) {
+  const browserEnv = resolvePersistdBrowserEnv({ env });
+  await ensureBrowser({ env: browserEnv });
   return new Promise((resolve, reject) => {
     const invocation = buildInvocation({ command });
-    const child = spawn(invocation.command, invocation.args, {
+    const child = spawnFn(invocation.command, invocation.args, {
       shell: invocation.shell,
       windowsHide: true,
-      env: resolvePersistdBrowserEnv({ env }),
+      env: browserEnv,
       stdio: [invocation.pipeStdin ? 'pipe' : 'ignore', 'pipe', 'pipe'],
     });
     let stdout = '';

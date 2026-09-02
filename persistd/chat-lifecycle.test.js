@@ -1137,3 +1137,27 @@ test('successor and claim confirmation embed the same Commander bootstrap primit
   assert.match(shared, /Desktop Commander/);
   assert.match(shared, /Remote Desktop Commander/);
 });
+
+test('first-party Edge launch policy starts CDP without a bootstrap page', () => {
+  const { buildEdgeLaunchArgs } = require('./src/browser/edge-host');
+  const args = buildEdgeLaunchArgs({ port: 9522, userDataDir: 'C:\\state\\profile' });
+  assert.ok(args.includes('--remote-debugging-port=9522'));
+  assert.ok(args.includes('--user-data-dir=C:\\state\\profile'));
+  assert.ok(args.includes('--no-startup-window'));
+  assert.equal(args.includes('about:blank'), false);
+});
+
+test('ego transport ensures the first-party Edge host before vendor execution', async () => {
+  const { EventEmitter } = require('node:events');
+  const { runEgoScript } = require('./src/browser/ego-browser');
+  const order = [];
+  const child = new EventEmitter();
+  child.stdout = new EventEmitter(); child.stderr = new EventEmitter();
+  child.stdin = { end() { setImmediate(() => { child.stdout.emit('data', 'PERSISTD_RESULT:{\"ok\":true}\n'); child.emit('close', 0); }); } };
+  child.kill = () => {};
+  const result = await runEgoScript('test-script', { command: process.execPath,
+    ensureBrowser: async () => { order.push('ensure'); },
+    spawnFn: () => { order.push('spawn'); return child; } });
+  assert.deepEqual(order, ['ensure', 'spawn']);
+  assert.deepEqual(result, { ok: true });
+});
