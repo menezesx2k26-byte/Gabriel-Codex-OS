@@ -4,6 +4,7 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $CodexDir = Join-Path $HOME ".codex"
 $AgentsDir = Join-Path $HOME ".agents"
 $SkillsDir = Join-Path $AgentsDir "skills"
+$PersistdDir = Join-Path $AgentsDir "persistd"
 $VendorDir = Join-Path $AgentsDir "vendor"
 
 New-Item -ItemType Directory -Force -Path $CodexDir | Out-Null
@@ -14,6 +15,12 @@ Copy-Item (Join-Path $RepoRoot "global\AGENTS.md") (Join-Path $CodexDir "AGENTS.
 
 $SourceSkills = Join-Path $RepoRoot "skills\*"
 Copy-Item $SourceSkills $SkillsDir -Recurse -Force
+
+$PersistdSource = Join-Path $RepoRoot "persistd"
+if (Test-Path (Join-Path $PersistdSource "package.json")) {
+    New-Item -ItemType Directory -Force -Path $PersistdDir | Out-Null
+    Copy-Item (Join-Path $PersistdSource "*") $PersistdDir -Recurse -Force
+}
 
 $VendorRepos = @(
     @{ Name = "awesome-harness-engineering"; Url = "https://github.com/ai-boost/awesome-harness-engineering.git" },
@@ -50,6 +57,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 
 Write-Host "Installed global AGENTS.md to $CodexDir"
 Write-Host "Installed skills to $SkillsDir"
+Write-Host "Installed versioned persistd runtime to $PersistdDir"
 Write-Host "Synced reuse-first vendor toolkit to $VendorDir"
 Write-Host "Vendor repositories are references/candidate sources; they are not automatically loaded into every prompt."
 Write-Host "Haikei remains a web/reference-only router option until a verified official Git repository exists."

@@ -1,0 +1,10 @@
+{
+  "name": "persistent-conversation-controller",
+  "version": "2.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test",
+    "start": "node src/daemon.js"
+  }
+}
