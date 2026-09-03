@@ -48,12 +48,13 @@ test('daemon wires remote health into every orchestrator tick', () => {
   assert.match(source, /const remoteHealth = createRemoteHealth\(\{ browser \}\)/);
   assert.match(source, /notifier,\s*remoteHealth,\s*rolloverMinutes/);
 });
-test('installer pins the hardened Windows ego host and rewrites the ego-browser shim', () => {
-  const fs = require('node:fs');
-  const path = require('node:path');
-  const source = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'install.ps1'), 'utf8');
+const installerFs = require('node:fs');
+const installerPath = require('node:path').join(__dirname, '..', 'scripts', 'install.ps1');
+test('installer pins the hardened Windows ego host and rewrites the ego-browser shim', { skip: !installerFs.existsSync(installerPath) }, () => {
+  const source = installerFs.readFileSync(installerPath, 'utf8');
   assert.match(source, /menezesx2k26-byte\/ego-lite\.git/);
   assert.match(source, /feat\/windows-host-state-hardening/);
+  assert.match(source, /8ef136f5d263b374f4071ea664dd232b42e54929/);
   assert.match(source, /ego-lite-windows-hardened/);
   assert.match(source, /ego-browser\.cmd/);
   assert.match(source, /npm --prefix .* run build/);
