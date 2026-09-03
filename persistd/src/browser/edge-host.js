@@ -33,6 +33,21 @@ function resolveStateDir(env = process.env) {
   return path.join(local, 'ego-windows-host');
 }
 
+async function stopOwnedChild(child, { sleep, timeoutMs = 5000 } = {}) {
+  if (!child || typeof child.kill !== 'function') return true;
+  if (child.exitCode !== undefined && child.exitCode !== null) return true;
+  const wait = sleep || ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+  let closed = false;
+  let resolveClosed;
+  const closePromise = new Promise((resolve) => { resolveClosed = resolve; });
+  if (typeof child.once === 'function') child.once('close', () => { closed = true; resolveClosed(); });
+  let signaled = false;
+  try { signaled = child.kill() !== false; } catch { signaled = false; }
+  if (!signaled) return false;
+  await Promise.race([closePromise, wait(timeoutMs)]);
+  return closed || (child.exitCode !== undefined && child.exitCode !== null);
+}
+
 async function ensureEdgeBrowser(options = {}) {
   const platform = options.platform || process.platform;
   if (platform !== 'win32') return { launched: false, skipped: true };
@@ -48,14 +63,20 @@ async function ensureEdgeBrowser(options = {}) {
   const args = buildEdgeLaunchArgs({ port, userDataDir, headless: env.EGO_HOST_HEADLESS === '1' || env.EGO_HOST_HEADLESS === 'true' });
   const spawnFn = options.spawnFn || spawn;
   const child = spawnFn(browserPath, args, { detached: true, stdio: 'ignore' });
+  let spawnError = null;
+  if (child?.on) child.on('error', (error) => { spawnError = error; });
   if (child?.unref) child.unref();
   const sleep = options.sleep || ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
   const deadline = Date.now() + (options.timeoutMs || 20000);
   while (Date.now() < deadline) {
+    if (spawnError) throw new Error(`PERSISTD_EDGE_SPAWN_ERROR:${spawnError.message || spawnError}`);
     const endpoint = await browserEndpoint(port, fetchFn);
     if (endpoint) return { endpoint, launched: true, args, userDataDir };
     await sleep(250);
   }
+  if (spawnError) throw new Error(`PERSISTD_EDGE_SPAWN_ERROR:${spawnError.message || spawnError}`);
+  const stopped = await stopOwnedChild(child, { sleep, timeoutMs: options.cleanupTimeoutMs || 5000 });
+  if (!stopped) throw new Error(`PERSISTD_EDGE_CLEANUP_TIMEOUT:${port}`);
   throw new Error(`PERSISTD_EDGE_CDP_TIMEOUT:${port}`);
 }
 
