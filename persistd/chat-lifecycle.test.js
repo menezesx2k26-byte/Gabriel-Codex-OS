@@ -1061,6 +1061,11 @@ test('resolver services due cleanup debt but not future cleanup debt', () => {
 });
 
 
+test('submitted successor preserves exact target id for cleanup fallback', () => {
+  const script = egoScript.buildSuccessorScript({ runId: 'submitted-target', message: 'baton', nextGeneration: 2 });
+  assert.match(script, /status: 'SUBMITTED',\s*taskSpaceId: task.id,\s*targetId: successorTargetId,\s*chatId:/);
+});
+
 test('failed successor falls back to exact target when chat close is not verified', async () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-close-fallback-'));
   const controlPath = makeRun(root, {
