@@ -4,6 +4,7 @@ const path = require('node:path');
 const { tick } = require('./orchestrator');
 const { createEgoBrowserTransport } = require('./browser/ego-browser');
 const { createNotifier } = require('./notifier');
+const { createRemoteHealth } = require('./remote-health');
 
 function parseArgs(argv) {
   const out = {
@@ -32,10 +33,12 @@ function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 async function runOnce(options) {
   const browser = createEgoBrowserTransport({ command: options.egoCommand });
   const notifier = createNotifier({ browser });
+  const remoteHealth = createRemoteHealth({ browser });
   return tick({
     root: options.root,
     browser,
     notifier,
+    remoteHealth,
     rolloverMinutes: options.rolloverMinutes,
     includeSynthetic: options.includeSynthetic, runId: options.runId,
   });

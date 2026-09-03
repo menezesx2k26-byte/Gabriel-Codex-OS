@@ -1124,7 +1124,7 @@ test('orphan cleanup debt is paid before normal active-run work resumes', async 
 });
 
 test('successor and claim confirmation embed the same Commander bootstrap primitive', () => {
-  const { buildCommanderSetupScript } = require('./src/browser/commander-setup');
+  const { buildCommanderSetupScript } = require('./src/browser/commander-script');
   const shared = buildCommanderSetupScript().trim();
   const successor = egoScript.buildSuccessorScript({ runId: 'shared-commander', message: 'baton', nextGeneration: 2 });
   const confirmation = require('./src/browser/conversation-script').buildSendMessageScript({
@@ -1160,4 +1160,46 @@ test('ego transport ensures the first-party Edge host before vendor execution', 
     spawnFn: () => { order.push('spawn'); return child; } });
   assert.deepEqual(order, ['ensure', 'spawn']);
   assert.deepEqual(result, { ok: true });
+});
+
+
+test('successor and confirmation share one Commander bootstrap implementation', () => {
+  const { buildCommanderSetupScript } = require('./src/browser/commander-script');
+  const shared = buildCommanderSetupScript();
+  const successor = egoScript.buildSuccessorScript({ runId: 'bootstrap-shared', message: 'baton', nextGeneration: 2 });
+  const confirmation = require('./src/browser/conversation-script').buildSendMessageScript({
+    runId: 'bootstrap-shared', chatId: 'chat-2', message: 'confirm', verifyLine: 'CLAIM_CONFIRMED bootstrap-shared G2 nonce', attachCommander: true,
+  });
+  assert.match(shared, /PERSISTD_COMMANDER_BOOTSTRAP_V1/);
+  assert.match(shared, /composer-plus-btn/);
+  assert.match(shared, /Desktop Commander/);
+  assert.ok(successor.includes(shared));
+  assert.ok(confirmation.includes(shared));
+});
+
+test('rollover preflight blocks before nonce when browser control is unhealthy', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-health-block-'));
+  const controlPath = makeRun(root, { RUN_ID: 'health-block', GENERATION: '2', STATUS: 'ACTIVE', PROJECT_ROOT: 'C:\\repo', STARTED_AT: '2026-09-02T20:00:00Z' });
+  let creates = 0;
+  const result = await orchestrator.tick({ root, browser: { async createSuccessor() { creates++; } }, notifier: {}, rolloverMinutes: 0,
+    remoteHealth: { async preflight() { return { ok: false, browser: 'UNHEALTHY', desktop: 'UNKNOWN', repaired: false }; } },
+    clock: () => new Date('2026-09-02T20:30:00Z') });
+  const final = readControl(controlPath);
+  assert.equal(result.action, 'REMOTE_CONTROL_RETRY');
+  assert.equal(creates, 0);
+  assert.equal(final.STATUS, 'WAITING_TOOL');
+  assert.equal(final.REMOTE_BROWSER_HEALTH, 'UNHEALTHY');
+  assert.equal(final.CLAIM_NONCE, undefined);
+});
+test('rollover preflight records successful desktop self-heal and continues', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-health-repair-'));
+  const controlPath = makeRun(root, { RUN_ID: 'health-repair', GENERATION: '2', STATUS: 'ACTIVE', PROJECT_ROOT: 'C:\\repo', STARTED_AT: '2026-09-02T20:00:00Z' });
+  const browser = { async createSuccessor() { return { status: 'BROWSER_ERROR', targetId: 'scratch' }; }, async closeRunTarget() { return { ok: true, closed: 1 }; } };
+  await orchestrator.tick({ root, browser, notifier: {}, rolloverMinutes: 0,
+    remoteHealth: { async preflight() { return { ok: true, browser: 'HEALTHY', desktop: 'HEALTHY', repaired: true }; } },
+    clock: () => new Date('2026-09-02T20:31:00Z') });
+  const final = readControl(controlPath);
+  assert.equal(final.REMOTE_BROWSER_HEALTH, 'HEALTHY');
+  assert.equal(final.REMOTE_DESKTOP_HEALTH, 'HEALTHY');
+  assert.equal(final.REMOTE_HEALTH_REPAIRED, 'true');
 });

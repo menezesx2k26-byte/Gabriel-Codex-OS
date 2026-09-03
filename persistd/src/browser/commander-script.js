@@ -1,5 +1,6 @@
 function buildCommanderSetupScript() {
   return `
+// PERSISTD_COMMANDER_BOOTSTRAP_V1
 const commanderAttached = async () => Boolean(await composer.evaluate((el) => {
   const form = el.closest('form')
   const text = String(form && form.innerText || '')

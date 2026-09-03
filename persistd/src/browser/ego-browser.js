@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawn, execFileSync } = require('node:child_process');
 const {
-  buildSuccessorScript, buildTerminalScript, buildRenameChatsScript, buildDiscoverRunChatsScript, buildCloseRunChatScript, buildCloseRunTargetScript, buildCleanupRunScratchTabsScript, buildPruneRunTabsScript, buildRunChatActivityScript, buildCleanupScript, parseEgoResult,
+  buildSuccessorScript, buildTerminalScript, buildRenameChatsScript, buildDiscoverRunChatsScript, buildCloseRunChatScript, buildCloseRunTargetScript, buildCleanupRunScratchTabsScript, buildPruneRunTabsScript, buildRunChatActivityScript, buildCleanupScript, buildHealthScript, parseEgoResult,
 } = require('./ego-script');
 const { buildFindAssistantLineScript, buildSendMessageScript } = require('./conversation-script');
 const { ensureEdgeBrowser } = require('./edge-host');
@@ -106,6 +106,9 @@ function createEgoBrowserTransport(options = {}) {
   return {
     async createSuccessor({ state, message, nextGeneration }) {
       return run(buildSuccessorScript({ runId: state.RUN_ID, message, nextGeneration }), { timeoutMs: successorTimeoutMs });
+    },
+    async healthCheck({ state } = {}) {
+      return run(buildHealthScript({ runId: state?.RUN_ID || 'health' }), { timeoutMs: 15000 });
     },
     async sendTerminalNotification({ state, message }) {
       if (!state.CHAT_ID || state.CHAT_ID === 'NONE') return { sent: false, status: 'CHAT_ID_MISSING' };

@@ -58,6 +58,44 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     }
 }
 
+$EgoWindowsDir = Join-Path $VendorDir "ego-lite-windows-hardened"
+$EgoWindowsUrl = "https://github.com/menezesx2k26-byte/ego-lite.git"
+$EgoWindowsBranch = "feat/windows-host-state-hardening"
+$EgoWindowsCommit = "8ef136f5d263b374f4071ea664dd232b42e54929"
+if ((Get-Command git -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
+    if (Test-Path (Join-Path $EgoWindowsDir ".git")) {
+        Write-Host "Updating hardened Windows ego host"
+        git -C $EgoWindowsDir fetch --depth 1 origin $EgoWindowsBranch | Out-Host
+        if ($LASTEXITCODE -ne 0) { throw "EGO_WINDOWS_FETCH_FAILED" }
+        git -C $EgoWindowsDir reset --hard $EgoWindowsCommit | Out-Host
+        if ($LASTEXITCODE -ne 0) { throw "EGO_WINDOWS_RESET_FAILED" }
+    } elseif (Test-Path $EgoWindowsDir) { throw "EGO_WINDOWS_DESTINATION_NOT_GIT: $EgoWindowsDir" }
+    else {
+        git clone --depth 1 --branch $EgoWindowsBranch --single-branch $EgoWindowsUrl $EgoWindowsDir | Out-Host
+        if ($LASTEXITCODE -ne 0) { throw "EGO_WINDOWS_CLONE_FAILED" }
+        git -C $EgoWindowsDir reset --hard $EgoWindowsCommit | Out-Host
+        if ($LASTEXITCODE -ne 0) { throw "EGO_WINDOWS_PIN_FAILED" }
+    }
+    $EgoBrowserDir = Join-Path $EgoWindowsDir "package\ego-browser"
+    $EgoHostDir = Join-Path $EgoWindowsDir "package\ego-windows-host"
+    npm --prefix $EgoBrowserDir install --ignore-scripts | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "EGO_BROWSER_INSTALL_FAILED" }
+    npm --prefix $EgoBrowserDir run build | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "EGO_BROWSER_BUILD_FAILED" }
+    npm --prefix $EgoHostDir install --ignore-scripts | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "EGO_WINDOWS_HOST_INSTALL_FAILED" }
+    npm --prefix $EgoHostDir test | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "EGO_WINDOWS_HOST_TEST_FAILED" }
+    $NodeExe = (Get-Command node -ErrorAction Stop).Source
+    $NpmBinDir = Join-Path $env:APPDATA "npm"
+    New-Item -ItemType Directory -Force -Path $NpmBinDir | Out-Null
+    $EgoShim = Join-Path $NpmBinDir "ego-browser.cmd"
+    $EgoEntry = Join-Path $EgoHostDir "bin\ego-windows-host.mjs"
+    $ShimContent = "@echo off" + [Environment]::NewLine + "`"$NodeExe`" `"$EgoEntry`" %*" + [Environment]::NewLine
+    [IO.File]::WriteAllText($EgoShim, $ShimContent, [Text.ASCIIEncoding]::new())
+    Write-Host "Installed hardened ego-browser.cmd to $EgoShim"
+} else { Write-Warning "Git or npm is unavailable; hardened Windows ego host was not installed." }
+
 Write-Host "Installed global AGENTS.md to $CodexDir"
 Write-Host "Installed skills to $SkillsDir"
 Write-Host "Installed versioned persistd runtime to $PersistdDir"

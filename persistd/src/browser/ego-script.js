@@ -1,6 +1,5 @@
-const { buildCommanderSetupScript } = require('./commander-setup');
-
 function js(value) { return JSON.stringify(value); }
+const { buildCommanderSetupScript } = require('./commander-script');
 
 function buildSuccessorScript({ runId, message, nextGeneration }) {
   const taskName = `persist:${runId}`;
@@ -326,6 +325,20 @@ console.log('PERSISTD_RESULT:' + JSON.stringify({ status: 'CLEANED', closed: Boo
 `;
 }
 
+function buildHealthScript({ runId = 'health' } = {}) {
+  const taskName = `persist:${runId}`;
+  return `
+let persistdResult
+try {
+  const task = await taskSpaces.useOrCreate(${js(taskName)})
+  const tabs = await browser.listTabs({ includeChrome: true })
+  persistdResult = { status: 'HEALTHY', ok: true, taskSpaceId: task.id, tabCount: tabs.length }
+} catch (error) {
+  persistdResult = { status: 'UNHEALTHY', ok: false, error: error && error.message ? String(error.message) : String(error) }
+}
+console.log('PERSISTD_RESULT:' + JSON.stringify(persistdResult))
+`;
+}
 function parseEgoResult(output) {
   const line = output.split(/\r?\n/).find((item) => item.startsWith('PERSISTD_RESULT:'));
   if (!line) throw new Error('EGO_RESULT_MISSING');
@@ -333,5 +346,5 @@ function parseEgoResult(output) {
 }
 
 module.exports = {
-  buildSuccessorScript, buildTerminalScript, buildRenameChatsScript, buildDiscoverRunChatsScript, buildCloseRunChatScript, buildCloseRunTargetScript, buildCleanupRunScratchTabsScript, buildPruneRunTabsScript, buildRunChatActivityScript, buildCleanupScript, parseEgoResult,
+  buildSuccessorScript, buildTerminalScript, buildRenameChatsScript, buildDiscoverRunChatsScript, buildCloseRunChatScript, buildCloseRunTargetScript, buildCleanupRunScratchTabsScript, buildPruneRunTabsScript, buildRunChatActivityScript, buildCleanupScript, buildHealthScript, parseEgoResult,
 };

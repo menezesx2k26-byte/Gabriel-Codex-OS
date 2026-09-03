@@ -1,6 +1,5 @@
-const { buildCommanderSetupScript } = require('./commander-setup');
-
 function js(value) { return JSON.stringify(value); }
+const { buildCommanderSetupScript } = require('./commander-script');
 
 function buildFindAssistantLineScript({ runId, chatId, line }) {
   const taskName = `persist:${runId}`;
