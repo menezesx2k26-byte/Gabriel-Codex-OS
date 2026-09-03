@@ -64,6 +64,7 @@ if (authRequired) {
   persistdResult = {
     status: 'SUBMITTED',
     taskSpaceId: task.id,
+    targetId: successorTargetId,
     chatId: match ? match[1] : null,
     claimSeen,
     url: finalUrl,
