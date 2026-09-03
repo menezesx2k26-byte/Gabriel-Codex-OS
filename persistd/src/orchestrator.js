@@ -213,7 +213,7 @@ async function finalizeDoneLifecycle({ controlPath, state, browser, now, generat
   return { action: 'FINALIZED', generation };
 }
 
-async function tick({ root, browser, notifier, clock = () => new Date(), rolloverMinutes = 20, includeSynthetic = false, runId = null }) {
+async function tick({ root, browser, notifier, remoteHealth = null, clock = () => new Date(), rolloverMinutes = 20, includeSynthetic = false, runId = null }) {
   const resolved = resolveRun(root, { includeSynthetic, includePendingDone: true, runId });
   if (!resolved) return { action: 'NO_INCOMPLETE_RUN' };
   const controlPath = resolved.CONTROL_PATH;
@@ -269,6 +269,21 @@ async function tick({ root, browser, notifier, clock = () => new Date(), rollove
     state = claimLease(state, `G${generation}`, now, 90_000);
     writeControlAtomic(controlPath, state);
     if (!isRolloverDue(state, now, rolloverMinutes)) return { action: 'WATCHING', generation };
+
+    if (remoteHealth?.preflight) {
+      let health;
+      try { health = await remoteHealth.preflight(state); }
+      catch { health = { ok: false, browser: 'UNHEALTHY', desktop: 'UNHEALTHY', repaired: false }; }
+      state = { ...state, REMOTE_HEALTH_AT: now.toISOString(), REMOTE_BROWSER_HEALTH: health?.browser || 'UNKNOWN',
+        REMOTE_DESKTOP_HEALTH: health?.desktop || 'UNKNOWN', REMOTE_HEALTH_REPAIRED: String(Boolean(health?.repaired)) };
+      if (!health?.ok) {
+        state = { ...state, STATUS: 'WAITING_TOOL', BLOCKED_REASON: 'REMOTE_CONTROL_UNHEALTHY' };
+        writeControlAtomic(controlPath, state);
+        return { action: 'REMOTE_CONTROL_RETRY', generation };
+      }
+      if (state.BLOCKED_REASON === 'REMOTE_CONTROL_UNHEALTHY') state = { ...state, BLOCKED_REASON: 'NONE' };
+      writeControlAtomic(controlPath, state);
+    }
 
     if (browser?.isRunChatBusy && state.CHAT_ID && state.CHAT_ID !== 'NONE') {
       try {
