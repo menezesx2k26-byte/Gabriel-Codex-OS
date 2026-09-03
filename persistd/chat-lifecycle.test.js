@@ -1064,3 +1064,30 @@ test('successor and confirmation share one Commander bootstrap implementation', 
   assert.ok(successor.includes(shared));
   assert.ok(confirmation.includes(shared));
 });
+
+test('rollover preflight blocks before nonce when browser control is unhealthy', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-health-block-'));
+  const controlPath = makeRun(root, { RUN_ID: 'health-block', GENERATION: '2', STATUS: 'ACTIVE', PROJECT_ROOT: 'C:\\repo', STARTED_AT: '2026-09-02T20:00:00Z' });
+  let creates = 0;
+  const result = await orchestrator.tick({ root, browser: { async createSuccessor() { creates++; } }, notifier: {}, rolloverMinutes: 0,
+    remoteHealth: { async preflight() { return { ok: false, browser: 'UNHEALTHY', desktop: 'UNKNOWN', repaired: false }; } },
+    clock: () => new Date('2026-09-02T20:30:00Z') });
+  const final = readControl(controlPath);
+  assert.equal(result.action, 'REMOTE_CONTROL_RETRY');
+  assert.equal(creates, 0);
+  assert.equal(final.STATUS, 'WAITING_TOOL');
+  assert.equal(final.REMOTE_BROWSER_HEALTH, 'UNHEALTHY');
+  assert.equal(final.CLAIM_NONCE, undefined);
+});
+test('rollover preflight records successful desktop self-heal and continues', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'persistd-health-repair-'));
+  const controlPath = makeRun(root, { RUN_ID: 'health-repair', GENERATION: '2', STATUS: 'ACTIVE', PROJECT_ROOT: 'C:\\repo', STARTED_AT: '2026-09-02T20:00:00Z' });
+  const browser = { async createSuccessor() { return { status: 'BROWSER_ERROR', targetId: 'scratch' }; }, async closeRunTarget() { return { ok: true, closed: 1 }; } };
+  await orchestrator.tick({ root, browser, notifier: {}, rolloverMinutes: 0,
+    remoteHealth: { async preflight() { return { ok: true, browser: 'HEALTHY', desktop: 'HEALTHY', repaired: true }; } },
+    clock: () => new Date('2026-09-02T20:31:00Z') });
+  const final = readControl(controlPath);
+  assert.equal(final.REMOTE_BROWSER_HEALTH, 'HEALTHY');
+  assert.equal(final.REMOTE_DESKTOP_HEALTH, 'HEALTHY');
+  assert.equal(final.REMOTE_HEALTH_REPAIRED, 'true');
+});
