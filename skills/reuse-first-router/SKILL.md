@@ -23,6 +23,7 @@ Current vendor references:
 - `ponytail` — YAGNI/reuse/minimal-code patterns for coding agents.
 - `tencentdb-agent-memory` — layered memory assets, skills, wiki/code graph, and per-agent context loadouts.
 - `ego-lite` — token-efficient browser automation patterns and an optional agent browser integration.
+- `design-agent-skills` — `podo/design-agent-skills`, a layered design catalogue with permanent routers and implementation pointers that should be resolved on-demand.
 - `motion-primitives` — animated UI primitives/components for modern frontend interfaces.
 - `watermelon-platform` — React component registry and UI inspiration/reference source.
 - `fontsource` — open-source font catalog and self-hosting packages for web typography, including Google Fonts and additional open-source families.
@@ -58,6 +59,27 @@ Reuse must not collapse visual design into catalog assembly. Before choosing a c
 - Default to 1–2 signature interactions and make each one serve the thesis or product behavior. More components or effects are not evidence of better design.
 - Apply the transplant test before accepting the visual result: if changing only the logo, name, and copy makes the same composition plausible for an unrelated SaaS, agency, local business, or product, the result is still generic and must be redesigned.
 
+## Design skill catalogue policy
+For design, frontend, UX, motion, accessibility, content-design, and design-review work, use `podo/design-agent-skills` as the first catalogue layer after checking the active project. Start with its `design-catalogue` or the smallest relevant domain catalogue, then resolve only the selected implementation pointer on-demand.
+
+The 42 skills below are Gabriel Codex OS's preferred design cohort. When one materially fits the request, prefer it before exploring the broader catalogue:
+- frontend/UI: `frontend-design`, `impeccable`, `taste-skill`, `make-interfaces-better`, `color-expert`, `design-tokens-skill`, `design-system-governance`, `brandkit`, `format-storybook`, `mobile-app-design`;
+- image/graphics/video: `canvas-design`, `algorithmic-art`, `p5js-hermes`, `shader-dev`, `animate-skill`, `css-animation-skill`, `wiggle-claude-skill`, `remotion-best-practices`;
+- product/interaction: `work-with-design-systems`, `extract-design-md`, `taste-design-stitch`, `design-html`, `information-architecture-and-navigation`, `interfaces-that-feel`, `search-ux`, `neo-user-journey`, `design-auditor`, `fixing-accessibility`;
+- behavior/content: `design-brief`, `design-consultation`, `ux-writing-skill`, `content-strategy`, `copywriting-skill`, `product-position`, `user-research-cookiy`, `software-ux-research`;
+- quality/evaluation: `plan-design-review`, `design-review-garrytan`, `design-debt-audit`, `design-impact-reporting`, `cloudflare-web-perf`, `dark-pattern-audit`.
+
+Current catalogue coverage was verified before adding this route. Three preferred names are direct-source exceptions rather than exact entries in the current `podo/design-agent-skills` catalogue:
+- `brandkit` -> `nexu-io/open-design`;
+- `canvas-design` -> `anthropics/skills`;
+- `remotion-best-practices` -> `remotion-dev/skills`.
+
+For those exceptions, inspect/install only the named upstream skill when it is actually selected. Do not promote the whole upstream repository to runtime merely to expose one skill.
+
+Do not bulk-install all 42 preferred skills or the full design catalogue. Do not load their complete `SKILL.md` files into every prompt. The vendor clone is an index/reference cache; implementation skills remain on-demand. If none of the preferred 42 fits, consult the broader `design-agent-skills` catalogue before broad web/GitHub discovery.
+
+This routing does not override project identity. Preserve the project's existing design system, approved visual thesis, domain-specific assets, and transplant-test requirements; catalogue skills are implementation/review capabilities, not automatic visual direction.
+
 ## Existing composed baselines
 Preserve the approved higher-level routes already used by the active router:
 - website/web-application SEO and GEO work -> `web-seo-baseline`, composing `nowork-studio/notfair-plugin` with the approved Alireza SEO skill set;
@@ -91,6 +113,7 @@ Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, 
 - coding-behavior pitfalls -> `andrej-karpathy-skills`
 - YAGNI / smallest-code solution -> `ponytail`
 - browser automation / web workflows -> `ego-lite` when the environment and constraints fit
+- design / frontend / UX / motion / accessibility / design review -> `design-agent-skills` via `design-catalogue`, preferring the 42-skill cohort and resolving the chosen skill on-demand
 - animated frontend motion/UI patterns -> `motion-primitives`
 - component registry / shadcn-style UI exploration -> `watermelon-platform`
 - free/open web fonts, self-hosting, font package selection -> `fontsource`
