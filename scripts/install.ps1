@@ -30,6 +30,7 @@ $VendorRepos = @(
     @{ Name = "ponytail"; Url = "https://github.com/DietrichGebert/ponytail.git" },
     @{ Name = "tencentdb-agent-memory"; Url = "https://github.com/TencentCloud/TencentDB-Agent-Memory.git" },
     @{ Name = "ego-lite"; Url = "https://github.com/citrolabs/ego-lite.git" },
+    @{ Name = "design-agent-skills"; Url = "https://github.com/podo/design-agent-skills.git" },
     @{ Name = "motion-primitives"; Url = "https://github.com/ibelick/motion-primitives.git" },
     @{ Name = "watermelon-platform"; Url = "https://github.com/WatermelonCorp/watermelon-platform.git" },
     @{ Name = "fontsource"; Url = "https://github.com/fontsource/fontsource.git" },
