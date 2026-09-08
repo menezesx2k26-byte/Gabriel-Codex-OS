@@ -57,3 +57,33 @@ Specialist guidance is advisory. A specialist cannot seize ownership or force it
 7. Gates: run focused engineering plus visual/UX review.
 8. Autonomous correction: repair failed gates without routine user coordination.
 9. Terminal state: finish only as `APPROVED` or `BLOCKED`.
+
+## Iteration discipline
+A failed review sets `NEEDS_REVISION`; it does not return routine correction work to the user. Focused failures receive focused corrections. Structural failures may return to implementation with a revised strategy. If the same failure appears in two consecutive review rounds, change strategy rather than repeating substantially identical patches. Continue autonomously until `APPROVED` or a genuine `BLOCKED` condition exists.
+
+## Execution record
+Maintain a compact record with `objective`, `visual_thesis`, `preserve_constraints`, `strategy`, `lead`, `support[]`, `reviewers[]`, `dependency_changes[]`, `structural_changes[]`, gate statuses, `open_failures[]`, and `state`. Use `$durable-execution-memory` for this record when work is long-running, interruptible, or cross-session.
+
+## Functional gate
+Preserved behavior, navigation, meaningful states, and API contracts must remain correct.
+
+## Engineering gate
+Run relevant build, typecheck, lint, and focused tests; keep dependency changes coherent; remove obsolete integration code and unjustified duplicate libraries. Respect the repository verification budget.
+
+## Visual gate
+Inspect hierarchy, composition, typography, spacing, color, contrast, relevant desktop and mobile layouts, placeholders/fake UI, project identity, and the transplant test.
+
+## UX and accessibility gate
+Check interaction clarity, feedback, keyboard/focus/semantics/contrast where relevant, loading/empty/error/disabled states, and motion usability.
+
+## Performance gate
+Treat performance as material when bundle size, rendering, hydration, images, or animation cost changed; do not run heavyweight audits without evidence of impact.
+
+## Rendered evidence
+When a runnable environment exists, inspect the rendered interface and relevant responsive states before approval. Build green is not visual approval. A visually attractive screenshot is not functional approval. Both forms of evidence are required when applicable.
+
+## States
+- `IN_PROGRESS`: active work.
+- `NEEDS_REVISION`: a gate failed and the director continues autonomously.
+- `BLOCKED`: correct continuation requires authority, information, access, or a change outside frontend scope.
+- `APPROVED`: every material gate has sufficient evidence; terminal.

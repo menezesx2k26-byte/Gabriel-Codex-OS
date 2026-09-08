@@ -6,6 +6,7 @@ AGENTS = (ROOT / "global" / "AGENTS.md").read_text(encoding="utf-8")
 DIRECTOR_PATH = ROOT / "skills" / "frontend-director" / "SKILL.md"
 DIRECTOR = DIRECTOR_PATH.read_text(encoding="utf-8") if DIRECTOR_PATH.exists() else ""
 ROUTER = (ROOT / "skills" / "reuse-first-router" / "SKILL.md").read_text(encoding="utf-8")
+REVIEWER = (ROOT / "skills" / "frontend-quality-reviewer" / "SKILL.md").read_text(encoding="utf-8")
 
 
 class FrontendDirectorTests(unittest.TestCase):
@@ -100,6 +101,40 @@ class FrontendDirectorTests(unittest.TestCase):
             ):
                 with self.subTest(section=section_name, marker=marker):
                     self.assertIn(marker, section)
+
+    def test_director_has_all_formal_states_and_autonomous_revision(self):
+        for marker in ("IN_PROGRESS", "NEEDS_REVISION", "BLOCKED", "APPROVED"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, DIRECTOR)
+        lowered = DIRECTOR.lower()
+        self.assertIn("continues autonomously", lowered)
+        self.assertIn("change strategy", lowered)
+
+    def test_build_green_is_not_visual_approval(self):
+        lowered = DIRECTOR.lower()
+        self.assertIn("build green is not visual approval", lowered)
+        self.assertIn("rendered", lowered)
+        self.assertIn("desktop", lowered)
+        self.assertIn("mobile", lowered)
+
+    def test_definition_of_done_covers_required_gates(self):
+        lowered = DIRECTOR.lower()
+        for marker in (
+            "functional gate",
+            "engineering gate",
+            "visual gate",
+            "ux and accessibility gate",
+            "performance gate",
+            "transplant test",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
+    def test_frontend_quality_reviewer_is_a_review_gate(self):
+        lowered = REVIEWER.lower()
+        self.assertIn("review gate", lowered)
+        self.assertIn("frontend-director", lowered)
+        self.assertNotIn("evaluating or implementing ui", lowered)
 
 
 if __name__ == "__main__":
