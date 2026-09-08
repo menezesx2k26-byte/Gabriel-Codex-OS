@@ -203,7 +203,7 @@ A "Swiss-army knife" does not have to be adopted wholesale. Prefer the cheapest 
 Avoid adding a large framework to solve a tiny isolated problem.
 
 ## Interaction with other skills
-- When `$frontend-director` owns a non-trivial frontend task, this router remains subordinate discovery/reuse infrastructure and does not take ownership or create a competing orchestration loop.
+- When a non-trivial frontend task is already owned by `$frontend-director`, this router is subordinate discovery/reuse infrastructure. Return reuse candidates, catalogue pointers, and adoption guidance to the director; do not take ownership of the task, create a competing orchestration loop, or require the user to coordinate the selected frontend specialists manually.
 - Use `$context-budget-manager` to keep discovery narrow.
 - Use `$llm-app-pattern-library` for LLM application patterns.
 - Use `$visual-quality-director` for visual tasks.

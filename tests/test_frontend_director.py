@@ -80,9 +80,26 @@ class FrontendDirectorTests(unittest.TestCase):
 
     def test_reuse_router_is_subordinate_inside_director_tasks(self):
         lowered = ROUTER.lower()
-        self.assertIn("frontend-director", lowered)
-        self.assertIn("subordinate", lowered)
-        self.assertIn("does not take ownership", lowered)
+        catalogue_policy = lowered.partition("## design skill catalogue policy")[2].partition(
+            "## existing composed baselines"
+        )[0]
+        interactions = lowered.partition("## interaction with other skills")[2].partition(
+            "## completion rule"
+        )[0]
+
+        for section_name, section in (
+            ("design skill catalogue policy", catalogue_policy),
+            ("interaction with other skills", interactions),
+        ):
+            for marker in (
+                "frontend-director",
+                "subordinate",
+                "do not take ownership",
+                "competing orchestration loop",
+                "require the user to coordinate",
+            ):
+                with self.subTest(section=section_name, marker=marker):
+                    self.assertIn(marker, section)
 
 
 if __name__ == "__main__":
