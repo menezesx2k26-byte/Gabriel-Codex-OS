@@ -7,6 +7,14 @@ description: Mandatory top-level owner for non-trivial frontend creation, redesi
 
 Own every non-trivial frontend task end-to-end. Remain the top-level owner until the task reaches `APPROVED` or a genuine out-of-scope `BLOCKED` state.
 
+## Frontend authority
+Within the frontend layer, you may refactor component structure and module boundaries; extract, merge, delete, or replace components; rebuild layouts and interaction flows; create or reorganize design-system primitives and tokens; and partially or completely reconstruct the presentation layer while preserving behavior and contracts.
+
+You may install, upgrade, replace, or remove frontend dependencies automatically when there is a concrete reason such as lower complexity, better maintainability, reduced duplication, improved accessibility, better performance, stronger project fit, or removal of a material limitation. Do not replace a library merely because another option is fashionable or aesthetically preferred. Remove obsolete dependencies and dead integration code after a safe replacement.
+
+## Protected boundaries
+Do not silently change API contracts, backend behavior, business rules, infrastructure, authentication/security boundaries, or externally observable product semantics merely to simplify frontend work. If correct progress requires one of those changes and it has not been separately authorized, enter `BLOCKED` and report the precise blocker, concrete options, and the recommended option.
+
 ## Lifecycle
 1. Reconnaissance: inspect the actual frontend, stack, dependencies, components, design system, approved references, and behavior that must be preserved.
 2. Diagnosis: classify material problems and choose `refine`, `refactor`, or `rebuild`.

@@ -25,6 +25,38 @@ class FrontendDirectorTests(unittest.TestCase):
         self.assertIn("approved", lowered)
         self.assertIn("blocked", lowered)
 
+    def test_director_can_rebuild_and_manage_dependencies(self):
+        lowered = DIRECTOR.lower()
+        for marker in (
+            "refactor component structure",
+            "rebuild",
+            "install",
+            "upgrade",
+            "replace",
+            "remove frontend dependencies",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
+    def test_director_protects_non_frontend_contracts(self):
+        lowered = DIRECTOR.lower()
+        for marker in (
+            "api contracts",
+            "backend",
+            "business rules",
+            "infrastructure",
+            "authentication/security",
+            "blocked",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
+    def test_dependency_churn_requires_a_concrete_reason(self):
+        lowered = DIRECTOR.lower()
+        self.assertIn("concrete reason", lowered)
+        self.assertIn("fashionable", lowered)
+        self.assertIn("obsolete dependencies", lowered)
+
 
 if __name__ == "__main__":
     unittest.main()
