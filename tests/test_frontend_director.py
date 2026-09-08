@@ -2,6 +2,8 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+README = (ROOT / "README.md").read_text(encoding="utf-8")
+INSTALL = (ROOT / "scripts" / "install.ps1").read_text(encoding="utf-8")
 AGENTS = (ROOT / "global" / "AGENTS.md").read_text(encoding="utf-8")
 DIRECTOR_PATH = ROOT / "skills" / "frontend-director" / "SKILL.md"
 DIRECTOR = DIRECTOR_PATH.read_text(encoding="utf-8") if DIRECTOR_PATH.exists() else ""
@@ -135,6 +137,16 @@ class FrontendDirectorTests(unittest.TestCase):
         self.assertIn("review gate", lowered)
         self.assertIn("frontend-director", lowered)
         self.assertNotIn("evaluating or implementing ui", lowered)
+
+    def test_readme_documents_automatic_director_route(self):
+        lowered = README.lower()
+        for marker in ("frontend-director", "automático", "obrigatório", "42", "on-demand"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
+    def test_existing_installer_copies_new_skill_generically(self):
+        self.assertIn('$SourceSkills = Join-Path $RepoRoot "skills\\*"', INSTALL)
+        self.assertIn('Copy-Item $SourceSkills $SkillsDir -Recurse -Force', INSTALL)
 
 
 if __name__ == "__main__":
