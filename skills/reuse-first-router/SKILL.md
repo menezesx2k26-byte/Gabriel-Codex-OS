@@ -59,6 +59,15 @@ Reuse must not collapse visual design into catalog assembly. Before choosing a c
 - Default to 1–2 signature interactions and make each one serve the thesis or product behavior. More components or effects are not evidence of better design.
 - Apply the transplant test before accepting the visual result: if changing only the logo, name, and copy makes the same composition plausible for an unrelated SaaS, agency, local business, or product, the result is still generic and must be redesigned.
 
+## Curated frontend source policy
+When `$frontend-director` identifies a concrete frontend need, prefer these direct sources before broad discovery:
+
+- design/product research -> Refero official skill/repository `referodesign/refero_skill`; use it research-first for real product patterns, design-system references, screens, and flows, then return findings to the Director.
+- shadcn/Tailwind component reuse -> Cult UI `nolly-studio/cult-ui`; treat it as a component source, not visual direction, and adapt the selected primitive to the project's tokens and composition. Cult Pro is not part of automatic routing and must not be assumed available.
+- animated 3D gradient / shader need -> ShaderGradient `ruucm/shadergradient`; use only when the visual thesis justifies WebGL/shader cost, and verify stack compatibility, bundle/rendering performance, mobile behavior, and `prefers-reduced-motion`.
+
+These three routes are remote/on-demand by default. Do not bulk-clone or install their runtime dependencies merely because they are known sources. Existing project code and already-installed dependencies remain Tier 0 and win when adequate.
+
 ## Design skill catalogue policy
 For design, frontend, UX, motion, accessibility, content-design, and design-review work, use `podo/design-agent-skills` as the first catalogue layer after checking the active project. Start with its `design-catalogue` or the smallest relevant domain catalogue, then resolve only the selected implementation pointer on-demand.
 

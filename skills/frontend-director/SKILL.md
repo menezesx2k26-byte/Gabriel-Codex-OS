@@ -36,6 +36,15 @@ Use these concrete capability routes as first-choice examples:
 
 You may replace the Lead if diagnosis changes. Execution is sequential by default; independent accessibility, performance, and visual reviews may run in parallel only on a stable candidate when the environment safely supports it. The workflow must still work in a single-agent environment by loading selected skills one at a time.
 
+## Curated frontend source routes
+These sources are subordinate implementation/research capabilities, not visual direction. Select them on demand only after reconnaissance and the project-specific visual thesis identify a concrete need. Do not let a demo aesthetic override the project's established identity.
+
+- **Refero** (`referodesign/refero_skill`): use as the preferred research-first reference route when the task benefits from studying real product patterns, design systems, screens, or flows before composing the solution. Treat Refero research as evidence/input to the Director, never as an automatic style prescription.
+- **Cult UI** (`nolly-studio/cult-ui`): use as a component source when a shadcn/Tailwind-compatible project needs a concrete animated or marketing/UI primitive that materially fits the accepted thesis. Adapt tokens, typography, spacing, motion, copy, and composition to the project. Cult Pro is excluded from automatic routing; do not assume paid/pro assets are available.
+- **ShaderGradient** (`ruucm/shadergradient`): use as a specialized shader/WebGL source only when an animated 3D gradient materially serves the visual thesis or product behavior. Verify framework/dependency compatibility before adoption, keep the effect isolated, and validate bundle/rendering performance, mobile behavior, and `prefers-reduced-motion`. Do not add a shader merely because it looks impressive.
+
+Prefer the smallest safe reuse level. Referencing a source does not authorize installing its runtime dependency; dependency installation still requires the concrete-reason rule above.
+
 ## Conflict resolution
 Resolve conflicting specialist recommendations in this order:
 1. functional requirements and preserved contracts;

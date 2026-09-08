@@ -68,6 +68,32 @@ class FrontendDirectorTests(unittest.TestCase):
                 self.assertIn(marker, lowered)
         self.assertIn("do not bulk-load", lowered)
 
+    def test_curated_frontend_sources_have_explicit_routes(self):
+        lowered = DIRECTOR.lower()
+        for marker in (
+            "referodesign/refero_skill",
+            "nolly-studio/cult-ui",
+            "ruucm/shadergradient",
+            "research",
+            "component source",
+            "shader",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
+    def test_curated_sources_remain_on_demand_and_project_led(self):
+        lowered = DIRECTOR.lower()
+        for marker in (
+            "visual thesis",
+            "on demand",
+            "cult pro",
+            "do not",
+            "prefers-reduced-motion",
+            "performance",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
     def test_director_resolves_specialist_conflicts(self):
         lowered = DIRECTOR.lower()
         ordered = (
