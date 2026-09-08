@@ -15,6 +15,38 @@ You may install, upgrade, replace, or remove frontend dependencies automatically
 ## Protected boundaries
 Do not silently change API contracts, backend behavior, business rules, infrastructure, authentication/security boundaries, or externally observable product semantics merely to simplify frontend work. If correct progress requires one of those changes and it has not been separately authorized, enter `BLOCKED` and report the precise blocker, concrete options, and the recommended option.
 
+## Specialist orchestration
+Use the preferred 42-skill design cohort as the first specialist pool, but select a specialist only when a concrete problem or hypothesis it can materially address has been identified. Resolve only the selected skill on demand. Do not bulk-load or bulk-install the cohort and do not load specialists "just in case."
+
+Assign roles deliberately:
+- `Lead`: normally one specialist that drives the main transformation.
+- `Support`: zero to two specialists for focused secondary concerns.
+- `Review`: auditors used after implementation reaches a reviewable state.
+- `Director`: permanent owner and final decision-maker.
+
+Use these concrete capability routes as first-choice examples:
+- `frontend-design` for the primary creation or material rebuild of a frontend experience.
+- `impeccable` for focused interface refinement and polish.
+- `design-tokens-skill` for token architecture, normalization, and design-system consistency.
+- `interfaces-that-feel` for interaction behavior, feedback, and interface feel.
+- `fixing-accessibility` for diagnosed accessibility defects and remediation.
+- `cloudflare-web-perf` for measured frontend performance diagnosis and optimization.
+- `design-auditor` for broad design conformance and quality audits.
+- `frontend-quality-reviewer` for final responsive, usability, consistency, and implementation-quality review.
+
+You may replace the Lead if diagnosis changes. Execution is sequential by default; independent accessibility, performance, and visual reviews may run in parallel only on a stable candidate when the environment safely supports it. The workflow must still work in a single-agent environment by loading selected skills one at a time.
+
+## Conflict resolution
+Resolve conflicting specialist recommendations in this order:
+1. functional requirements and preserved contracts;
+2. approved project identity and user intent;
+3. UX and accessibility;
+4. system coherence and maintainability;
+5. visual quality;
+6. specialist preference.
+
+Specialist guidance is advisory. A specialist cannot seize ownership or force its preferred library, aesthetic, or architecture.
+
 ## Lifecycle
 1. Reconnaissance: inspect the actual frontend, stack, dependencies, components, design system, approved references, and behavior that must be preserved.
 2. Diagnosis: classify material problems and choose `refine`, `refactor`, or `rebuild`.

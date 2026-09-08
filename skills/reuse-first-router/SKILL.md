@@ -62,6 +62,8 @@ Reuse must not collapse visual design into catalog assembly. Before choosing a c
 ## Design skill catalogue policy
 For design, frontend, UX, motion, accessibility, content-design, and design-review work, use `podo/design-agent-skills` as the first catalogue layer after checking the active project. Start with its `design-catalogue` or the smallest relevant domain catalogue, then resolve only the selected implementation pointer on-demand.
 
+When a non-trivial frontend task is already owned by `$frontend-director`, this router is subordinate discovery/reuse infrastructure. Return reuse candidates, catalogue pointers, and adoption guidance to the director; do not take ownership of the task, create a competing orchestration loop, or require the user to coordinate the selected frontend specialists manually.
+
 The 42 skills below are Gabriel Codex OS's preferred design cohort. When one materially fits the request, prefer it before exploring the broader catalogue:
 - frontend/UI: `frontend-design`, `impeccable`, `taste-skill`, `make-interfaces-better`, `color-expert`, `design-tokens-skill`, `design-system-governance`, `brandkit`, `format-storybook`, `mobile-app-design`;
 - image/graphics/video: `canvas-design`, `algorithmic-art`, `p5js-hermes`, `shader-dev`, `animate-skill`, `css-animation-skill`, `wiggle-claude-skill`, `remotion-best-practices`;
@@ -201,6 +203,7 @@ A "Swiss-army knife" does not have to be adopted wholesale. Prefer the cheapest 
 Avoid adding a large framework to solve a tiny isolated problem.
 
 ## Interaction with other skills
+- When `$frontend-director` owns a non-trivial frontend task, this router remains subordinate discovery/reuse infrastructure and does not take ownership or create a competing orchestration loop.
 - Use `$context-budget-manager` to keep discovery narrow.
 - Use `$llm-app-pattern-library` for LLM application patterns.
 - Use `$visual-quality-director` for visual tasks.

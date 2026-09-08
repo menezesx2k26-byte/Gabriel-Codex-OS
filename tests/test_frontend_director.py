@@ -5,6 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 AGENTS = (ROOT / "global" / "AGENTS.md").read_text(encoding="utf-8")
 DIRECTOR_PATH = ROOT / "skills" / "frontend-director" / "SKILL.md"
 DIRECTOR = DIRECTOR_PATH.read_text(encoding="utf-8") if DIRECTOR_PATH.exists() else ""
+ROUTER = (ROOT / "skills" / "reuse-first-router" / "SKILL.md").read_text(encoding="utf-8")
 
 
 class FrontendDirectorTests(unittest.TestCase):
@@ -56,6 +57,32 @@ class FrontendDirectorTests(unittest.TestCase):
         self.assertIn("concrete reason", lowered)
         self.assertIn("fashionable", lowered)
         self.assertIn("obsolete dependencies", lowered)
+
+    def test_specialists_are_selected_on_demand_by_concrete_need(self):
+        lowered = DIRECTOR.lower()
+        for marker in ("lead", "support", "review", "on demand", "concrete problem"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+        self.assertIn("do not bulk-load", lowered)
+
+    def test_director_resolves_specialist_conflicts(self):
+        lowered = DIRECTOR.lower()
+        ordered = (
+            "functional requirements",
+            "project identity",
+            "ux and accessibility",
+            "system coherence",
+            "visual quality",
+            "specialist preference",
+        )
+        positions = [lowered.index(marker) for marker in ordered]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_reuse_router_is_subordinate_inside_director_tasks(self):
+        lowered = ROUTER.lower()
+        self.assertIn("frontend-director", lowered)
+        self.assertIn("subordinate", lowered)
+        self.assertIn("does not take ownership", lowered)
 
 
 if __name__ == "__main__":
