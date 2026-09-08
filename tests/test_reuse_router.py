@@ -57,6 +57,18 @@ class ReuseRouterVendorTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, ROUTER)
 
+    def test_router_exposes_curated_frontend_source_routes(self):
+        lowered = ROUTER.lower()
+        for marker in (
+            "referodesign/refero_skill",
+            "nolly-studio/cult-ui",
+            "ruucm/shadergradient",
+            "cult pro",
+            "prefers-reduced-motion",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
     def test_router_requires_project_specific_frontend_identity(self):
         lowered = ROUTER.lower()
         for marker in (

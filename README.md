@@ -31,6 +31,7 @@ A continuidade segue o princípio de que **contexto do modelo não é histórico
 
 ## Skills centrais
 
+- `frontend-director`: owner automático e obrigatório de frontend não trivial; diagnostica, escolhe especialistas on-demand, pode refatorar/reconstruir a camada frontend e coordena implementação + QA até `APPROVED` ou um bloqueio real fora do escopo.
 - `visual-quality-director`: direção, revisão e aprovação de assets visuais.
 - `durable-execution-memory`: continuidade entre sessões, recuperação após interrupções e persistência de fatos operacionais sem depender do histórico do chat.
 - `persistent-conversation-controller`: mantém workflows supervisionados vivos através de limites de conversas no navegador, com rollover preventivo e takeover verificado.
@@ -89,6 +90,10 @@ A checagem do catálogo atual encontrou 39 dos 42 nomes diretamente. Três perma
 
 Se nenhuma das 42 resolver materialmente a tarefa, o router pode consultar o restante do catálogo `design-agent-skills`. A regra continua sendo não fazer bulk-install nem carregar dezenas de `SKILL.md` no contexto: projeto atual -> índice/router -> skill escolhida -> implementação.
 
+#### Coordenação automática
+
+As 42 skills não precisam mais ser coordenadas manualmente pelo usuário: o `frontend-director` escolhe `Lead`, `Support` e `Review` conforme a necessidade e mantém o `reuse-first-router` como infraestrutura subordinada de descoberta.
+
 ## Atualização
 
 Depois de alterar este repositório:
@@ -126,7 +131,7 @@ NovoProjeto/
 - trate Git/repositório como evidência autoritativa de execução
 - use carregamento progressivo de contexto: resumo curto -> visão geral -> detalhe apenas quando necessário
 - procure primeiro no vendor toolkit antes de pesquisa ampla ou implementação customizada
-- para design/frontend/UX, passe por `design-agent-skills`, priorize o cohort de 42 e resolva somente a skill escolhida on-demand
+- todo frontend não trivial passa automaticamente pelo `frontend-director`; o diretor usa `design-agent-skills`, o cohort de 42, `motion-primitives`, `watermelon-platform` e outras referências apenas quando materialmente necessário
 - para motion/UI e libraries visuais, priorize `motion-primitives`, `watermelon-platform` e `haikei.app` antes de reinventar assets ou componentes
 - para workflows no estilo Manus, avalie `OpenManus` e `skill-manus` antes de construir integrações/CLIs do zero
 - para automação web, prefira composição de ações e snapshots semânticos quando isso reduzir loops sem perder segurança/observabilidade

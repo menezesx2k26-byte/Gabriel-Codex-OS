@@ -79,6 +79,11 @@ These are persistent cross-project operating rules for Codex.
 - Do not introduce multi-agent architecture, RAG infrastructure, or new frameworks merely because an external example uses them.
 - Inspect and validate any adapted code independently before treating it as production-ready.
 
+## Mandatory frontend routing
+- For every non-trivial frontend task involving creation or material alteration of UI, layout, components, responsive behavior, design systems, tokens, typography, motion, accessibility, frontend performance, or presentation-layer structure, invoke `$frontend-director` automatically and treat it as mandatory even when the user did not name it.
+- Once `$frontend-director` owns a task, it remains the top-level owner until it reaches `APPROVED` or a genuine out-of-scope `BLOCKED` state; subordinate routers, specialists, reviewers, and libraries do not replace that ownership.
+- Trivial copy-only edits and similarly narrow changes may bypass the director when they require no design judgment, structural change, or visual validation.
+
 ## Validation
 - Run relevant checks after meaningful changes.
 - For code: lint, tests, typecheck, build, or focused validation as appropriate.
