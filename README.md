@@ -85,7 +85,7 @@ Para Manus, a fonte oficial no GitHub é `https://github.com/manus-ai`. `OpenMan
 
 ### Descoberta de APIs públicas
 
-O `reuse-first-router` usa `public-apis/public-apis` como índice remoto/on-demand de public API antes de autorizar scraping, reverse engineering de endpoint privado ou uma integração customizada desnecessária. A entrada do catálogo serve para descoberta; a adoção só acontece depois de conferir os official docs do provedor, autenticação, HTTPS, rate limits, termos/licença, CORS quando relevante e status de manutenção/depreciação.
+O `reuse-first-router` usa `public-apis/public-apis` como índice remoto/on-demand de APIs públicas antes de autorizar scraping, engenharia reversa de endpoint privado ou uma integração customizada desnecessária. A entrada do catálogo serve para descoberta; a adoção só acontece depois de conferir a documentação oficial do provedor, autenticação, HTTPS, rate limits, termos/licença, CORS quando relevante e status de manutenção/depreciação.
 
 O catálogo não entra no vendor toolkit por padrão e não é carregado inteiro em contexto. O fluxo é: necessidade concreta -> busca dirigida no catálogo -> API candidata -> documentação oficial/first-party -> integração mínima compatível com o projeto.
 
@@ -153,7 +153,7 @@ NovoProjeto/
 - **OpenViking** — referência de context engineering para filesystem de contexto, carregamento L0/L1/L2, recuperação hierárquica e rastreabilidade da recuperação; usar como inspiração arquitetural e avaliar AGPLv3, privacidade e custo operacional antes de qualquer adoção como dependência: https://github.com/volcengine/OpenViking
 - **TencentDB Agent Memory** — referência para memória em camadas, assets de memória, extração de skills, Wiki/CodeGraph e loadout seletivo por agente: https://github.com/TencentCloud/TencentDB-Agent-Memory
 - **ego-lite** — referência/candidato para browser automation com menos round-trips, composição de ações e espaços isolados por agente: https://github.com/citrolabs/ego-lite
-- **public-apis/public-apis** — catálogo para descobrir uma public API adequada antes de recorrer a scraping ou implementação customizada; sempre validar a candidata nos official docs do provedor: https://github.com/public-apis/public-apis
+- **public-apis/public-apis** — catálogo para descobrir uma API pública adequada antes de recorrer a scraping ou implementação customizada; sempre validar a candidata na documentação oficial do provedor: https://github.com/public-apis/public-apis
 
 ## Próximas skills sugeridas
 
