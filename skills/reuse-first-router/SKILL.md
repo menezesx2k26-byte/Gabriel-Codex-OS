@@ -34,6 +34,13 @@ These repositories are reference/candidate sources. Do not load them wholesale i
 
 Haikei is a special case: `haikei.app` is useful as a web-first SVG/background generator reference, but there is no verified official upstream GitHub repository in this toolkit. Treat it as a remote/web option and do not assume unrelated `haikei` repositories are official.
 
+## Public API discovery policy
+For public API discovery, use `public-apis/public-apis` as an index before building a custom integration, scraping a website, or reverse-engineering a private endpoint.
+
+Treat the catalogue as discovery metadata, not as an authority or trust endorsement. After a candidate is found, verify it against the official provider documentation before adoption. Check at minimum current endpoint availability, authentication requirements, HTTPS support, rate limits, terms/licensing, data-use constraints, CORS where browser access matters, maintenance/deprecation status, and whether the provider exposes a more direct official SDK or API.
+
+Prefer the official provider documentation and first-party repository over the catalogue entry when they disagree. Do not bulk-load the catalogue, do not call third-party endpoints automatically just because they are listed, and do not introduce scraping when a suitable documented public API already covers the requirement.
+
 Manus source policy:
 - For the official Manus product, service, API, or first-party integrations, prefer first-party sources: `https://github.com/manus-ai` and `manus.im`.
 - `OpenManus` is a community open-source framework for Manus-style architecture/reference; do not describe it as the official Manus implementation.
@@ -124,6 +131,7 @@ Check the smallest relevant known reference, preferably in `~/.agents/vendor/`, 
 - coding-behavior pitfalls -> `andrej-karpathy-skills`
 - YAGNI / smallest-code solution -> `ponytail`
 - browser automation / web workflows -> `ego-lite` when the environment and constraints fit
+- public API discovery / avoid unnecessary scraping -> `public-apis/public-apis`, then verify the selected provider in official docs
 - design / frontend / UX / motion / accessibility / design review -> `design-agent-skills` via `design-catalogue`, preferring the 42-skill cohort and resolving the chosen skill on-demand
 - animated frontend motion/UI patterns -> `motion-primitives`
 - component registry / shadcn-style UI exploration -> `watermelon-platform`
