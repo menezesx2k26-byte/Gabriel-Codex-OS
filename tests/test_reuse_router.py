@@ -57,6 +57,24 @@ class ReuseRouterVendorTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.assertIn(marker, ROUTER)
 
+    def test_router_exposes_public_api_discovery_route(self):
+        lowered = ROUTER.lower()
+        for marker in (
+            "public-apis/public-apis",
+            "public api discovery",
+            "official provider documentation",
+            "scraping",
+            "rate limits",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
+    def test_readme_documents_public_api_discovery_route(self):
+        lowered = README.lower()
+        for marker in ("public-apis/public-apis", "api pública", "scraping", "documentação oficial"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, lowered)
+
     def test_router_exposes_curated_frontend_source_routes(self):
         lowered = ROUTER.lower()
         for marker in (
