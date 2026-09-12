@@ -38,6 +38,7 @@ A continuidade segue o princípio de que **contexto do modelo não é histórico
 - `llm-app-pattern-library`: consulta seletiva a padrões e exemplos de agentes, RAG, multimodal, voice, generative UI, always-on e multi-agent antes de introduzir arquitetura ou dependências novas.
 - `context-budget-manager`: controla o working set de contexto, usa carregamento progressivo e evita leituras, referências e reexploração desnecessárias sem sacrificar validação.
 - `reuse-first-router`: procura primeiro por soluções existentes e canivetes suíços antes de autorizar implementação customizada.
+- `media-transcriber`: transcreve áudio/vídeo e URLs de mídia, incluindo Instagram Reels, com aquisição resiliente e ASR local.
 - `/revise`: rigorous code review orchestration with deterministic checks, PR-Agent, reviewdog, and OpenReviewer-style refute-or-drop verification.
 
 ## Instalação
