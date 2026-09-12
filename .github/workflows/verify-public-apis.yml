@@ -1,0 +1,17 @@
+name: verify-public-apis-route
+
+on:
+  push:
+    branches:
+      - feat/public-apis-discovery
+
+jobs:
+  test-reuse-router:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run reuse router regression tests
+        run: python -m unittest discover -s tests -p 'test_reuse_router.py'
