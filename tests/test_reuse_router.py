@@ -71,7 +71,7 @@ class ReuseRouterVendorTests(unittest.TestCase):
 
     def test_readme_documents_public_api_discovery_route(self):
         lowered = README.lower()
-        for marker in ("public-apis/public-apis", "public api", "scraping", "official docs"):
+        for marker in ("public-apis/public-apis", "api pública", "scraping", "documentação oficial"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, lowered)
 
