@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/YouCineBridge/YouCineBridge.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/YouCineBridge.Tests/YouCineBridge.Tests.csproj" />
+  </Folder>
+</Solution>
