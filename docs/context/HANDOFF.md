@@ -1,27 +1,27 @@
-﻿# YouCine Bridge â€” Handoff
+# YouCine Bridge — Handoff
 
 ## Current phase
-Finish local Bridge lifecycle/packaging while bringing up a persistent Android runtime that does not depend on the phone.
+Tray/application lifecycle is wired; finish Windows packaging/install and bring up the persistent Android runtime that does not depend on the phone.
 
 ## Completed
 - Core bridge architecture implemented through TDD.
 - Free PiP, fullscreen/windowed mode, hotkeys, single-instance, watchdog, runtime endpoint preference, and coordinator exist in code.
+- `BridgeApplicationContext` now owns tray commands, startup, hotkeys, PiP hook, watchdog, and shutdown.
+- `Program.cs` now composes the real bridge runtime and signals the primary process on repeated launcher clicks.
+- Existing scrcpy presentation state is synchronized before hotkey/window commands are used.
 - Durable design and implementation plan live under `docs/superpowers/`.
-- Branch `feature/youcine-bridge` already exists on GitHub.
+- Branch `feature/youcine-bridge` exists on GitHub.
 
 ## Validated
-- 36/36 full-suite tests passed after the latest RuntimeEndpoint/coordinator changes.
-- New RuntimeEndpoint tests passed 5/5.
-- New coordinator tests passed 2/2.
+- 46/46 full-suite tests pass with the tray/application wiring.
+- RuntimeEndpoint/coordinator tests remain green.
+- Window state synchronization has explicit fullscreen/PiP regression tests.
 
 ## Pending
-- Re-run the complete suite after latest changes, then commit/push.
-- Implement `BridgeApplicationContext`/tray wiring and replace scaffold `Form1` startup.
 - Publish/install the Windows executable and create the Start Menu shortcut.
 - Bring up a stable persistent ReDroid host; `tsim-vm` is preferred if it recovers.
 - Perform one-time authenticated-state migration only if supported; never fabricate server entitlement.
 - Real-device/runtime smoke test remains required.
 
 ## Exact next action
-Commit/push the green RuntimeEndpoint + coordinator + durable context checkpoint, then continue with `BridgeApplicationContext`.
-
+Implement/verify packaging (`install.ps1` + Release publish), install locally, then continue the persistent ReDroid/runtime smoke path.

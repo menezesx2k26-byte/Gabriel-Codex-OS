@@ -93,3 +93,56 @@ public sealed class WindowedToggleTests
         public void Focus(IntPtr hwnd) { }
     }
 }
+
+public sealed class WindowStateSyncTests
+{
+    [Fact]
+    public void SynchronizePresentationState_DetectsExistingFullscreenWindow()
+    {
+        var api = new StateFakeWindowApi
+        {
+            Style = NativeMethods.WS_VISIBLE,
+            ExStyle = 0,
+            Bounds = new Rectangle(0, 0, 1920, 1080)
+        };
+        var controller = new WindowController(() => (IntPtr)42, api, new BridgeSettings(), "settings.json");
+
+        controller.SynchronizePresentationState();
+
+        Assert.True(controller.IsFullscreen);
+        Assert.False(controller.IsPip);
+    }
+
+    [Fact]
+    public void SynchronizePresentationState_DetectsExistingPipWindow()
+    {
+        var api = new StateFakeWindowApi
+        {
+            Style = NativeMethods.WS_VISIBLE | NativeMethods.WS_THICKFRAME,
+            ExStyle = NativeMethods.WS_EX_TOPMOST,
+            Bounds = new Rectangle(100, 100, 640, 360)
+        };
+        var controller = new WindowController(() => (IntPtr)42, api, new BridgeSettings(), "settings.json");
+
+        controller.SynchronizePresentationState();
+
+        Assert.True(controller.IsPip);
+        Assert.False(controller.IsFullscreen);
+    }
+
+    private sealed class StateFakeWindowApi : IWindowApi
+    {
+        public long Style { get; set; }
+        public long ExStyle { get; set; }
+        public Rectangle Bounds { get; set; }
+        public Rectangle MonitorBounds { get; set; } = new(0, 0, 1920, 1080);
+        public long GetStyle(IntPtr hwnd) => Style;
+        public long GetExStyle(IntPtr hwnd) => ExStyle;
+        public Rectangle GetBounds(IntPtr hwnd) => Bounds;
+        public Rectangle GetMonitorBounds(IntPtr hwnd) => MonitorBounds;
+        public void SetStyle(IntPtr hwnd, long style) => Style = style;
+        public void SetExStyle(IntPtr hwnd, long style) => ExStyle = style;
+        public void SetBounds(IntPtr hwnd, Rectangle bounds, bool topmost, bool frameChanged) => Bounds = bounds;
+        public void Focus(IntPtr hwnd) { }
+    }
+}

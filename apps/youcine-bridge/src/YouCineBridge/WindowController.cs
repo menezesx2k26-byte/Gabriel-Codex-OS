@@ -65,6 +65,7 @@ public sealed class WindowController
         var monitor = _api.GetMonitorBounds(hwnd);
         EnterPip(_settings.PipBounds ?? PipGeometry.DefaultFor(monitor));
     }
+
     public void ToggleFullscreen()
     {
         if (IsFullscreen) EnterWindowed();
@@ -94,6 +95,7 @@ public sealed class WindowController
         IsPip = false;
         IsFullscreen = false;
     }
+
     public void MoveBy(int dx, int dy)
     {
         if (!IsPip) return;
@@ -112,6 +114,21 @@ public sealed class WindowController
         _settings.PipBounds = normalized;
         _settings.Save(_settingsPath);
         return normalized;
+    }
+
+    public void SynchronizePresentationState()
+    {
+        var hwnd = RequireHandle();
+        var style = _api.GetStyle(hwnd);
+        var exStyle = _api.GetExStyle(hwnd);
+        var bounds = _api.GetBounds(hwnd);
+        var monitor = _api.GetMonitorBounds(hwnd);
+
+        var isPip = (exStyle & NativeMethods.WS_EX_TOPMOST) != 0 &&
+                    (style & NativeMethods.WS_CAPTION) == 0 &&
+                    (style & NativeMethods.WS_THICKFRAME) != 0;
+        IsPip = isPip;
+        IsFullscreen = !isPip && (style & FrameMask) == 0 && bounds == monitor;
     }
 
     public void Focus() => _api.Focus(RequireHandle());
