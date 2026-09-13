@@ -21,6 +21,7 @@ public sealed class WindowController
     }
 
     public bool IsPip { get; private set; }
+    public bool IsFullscreen { get; private set; }
 
     public void EnterPip(Rectangle requested)
     {
@@ -36,6 +37,7 @@ public sealed class WindowController
         _api.SetExStyle(hwnd, exStyle);
         _api.SetBounds(hwnd, bounds, topmost: true, frameChanged: true);
         IsPip = true;
+        IsFullscreen = false;
     }
 
     public void EnterFullscreen()
@@ -47,6 +49,7 @@ public sealed class WindowController
         _api.SetExStyle(hwnd, exStyle);
         _api.SetBounds(hwnd, _api.GetMonitorBounds(hwnd), topmost: false, frameChanged: true);
         IsPip = false;
+        IsFullscreen = true;
     }
 
     public void TogglePip()
@@ -61,6 +64,35 @@ public sealed class WindowController
 
         var monitor = _api.GetMonitorBounds(hwnd);
         EnterPip(_settings.PipBounds ?? PipGeometry.DefaultFor(monitor));
+    }
+    public void ToggleFullscreen()
+    {
+        if (IsFullscreen) EnterWindowed();
+        else EnterFullscreen();
+    }
+
+    public void EnterWindowed()
+    {
+        var hwnd = RequireHandle();
+        var monitor = _api.GetMonitorBounds(hwnd);
+        var width = Math.Min(1280, Math.Max(640, monitor.Width - 80));
+        var height = (int)Math.Round(width * 9d / 16d);
+        if (height > monitor.Height - 80)
+        {
+            height = Math.Max(360, monitor.Height - 80);
+            width = (int)Math.Round(height * 16d / 9d);
+        }
+        var bounds = new Rectangle(
+            monitor.Left + (monitor.Width - width) / 2,
+            monitor.Top + (monitor.Height - height) / 2,
+            width, height);
+        var style = _api.GetStyle(hwnd) | FrameMask;
+        var exStyle = _api.GetExStyle(hwnd) & ~NativeMethods.WS_EX_TOPMOST;
+        _api.SetStyle(hwnd, style);
+        _api.SetExStyle(hwnd, exStyle);
+        _api.SetBounds(hwnd, bounds, topmost: false, frameChanged: true);
+        IsPip = false;
+        IsFullscreen = false;
     }
     public void MoveBy(int dx, int dy)
     {

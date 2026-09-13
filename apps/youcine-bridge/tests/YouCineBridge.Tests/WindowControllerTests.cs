@@ -61,3 +61,35 @@ public sealed class WindowControllerTests
         public void Focus(IntPtr hwnd) { }
     }
 }
+
+public sealed class WindowedToggleTests
+{
+    [Fact]
+    public void ToggleFullscreen_FromFullscreen_RestoresFramedWindow()
+    {
+        var api = new ToggleFakeWindowApi();
+        var controller = new WindowController(() => (IntPtr)42, api, new BridgeSettings(), "settings.json");
+        controller.EnterFullscreen();
+
+        controller.ToggleFullscreen();
+
+        Assert.NotEqual(0, api.Style & NativeMethods.WS_CAPTION);
+        Assert.NotEqual(0, api.Style & NativeMethods.WS_THICKFRAME);
+        Assert.False(controller.IsFullscreen);
+    }
+
+    private sealed class ToggleFakeWindowApi : IWindowApi
+    {
+        public long Style { get; set; } = NativeMethods.WS_VISIBLE | NativeMethods.WS_CAPTION | NativeMethods.WS_THICKFRAME;
+        public long ExStyle { get; set; }
+        public Rectangle Bounds { get; set; } = new(0, 0, 1280, 720);
+        public long GetStyle(IntPtr hwnd) => Style;
+        public long GetExStyle(IntPtr hwnd) => ExStyle;
+        public Rectangle GetBounds(IntPtr hwnd) => Bounds;
+        public Rectangle GetMonitorBounds(IntPtr hwnd) => new(0, 0, 1920, 1080);
+        public void SetStyle(IntPtr hwnd, long style) => Style = style;
+        public void SetExStyle(IntPtr hwnd, long style) => ExStyle = style;
+        public void SetBounds(IntPtr hwnd, Rectangle bounds, bool topmost, bool frameChanged) => Bounds = bounds;
+        public void Focus(IntPtr hwnd) { }
+    }
+}
